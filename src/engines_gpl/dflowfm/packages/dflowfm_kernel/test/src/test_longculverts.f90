@@ -1996,10 +1996,11 @@ contains
       integer :: ierr, iunit
       logical :: file_exists
 
-      ! Delete leftover converted_crsdef.ini from previous test runs
+      ! Delete leftover converted_crsdef.ini from previous test runs.
+      ! NUMBER= is -1 when the file is not connected; closing that unit wedges the I/O runtime.
       inquire (file='converted_crsdef.ini', exist=file_exists, number=iunit)
       if (file_exists) then
-         if (iunit /= 0) then
+         if (iunit /= -1) then
             close (iunit, iostat=ierr)
          end if
          open (newunit=iunit, file='converted_crsdef.ini', status='old', iostat=ierr)

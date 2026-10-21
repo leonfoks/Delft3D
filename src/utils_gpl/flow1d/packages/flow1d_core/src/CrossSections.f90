@@ -182,7 +182,7 @@ module m_CrossSections
 
       !--- additional data for river profiles
       double precision :: plains(3) = 0.0d0 !< 1: main channel, 2: floopplain 1, 3: floodplain 2
-      integer :: plainsLocation(3) !< locations (widths) of the main channel and floodplains
+      integer :: plainsLocation(3) = 0 !< last table level of the main channel and floodplains, 0 for an absent section
       !--- information for Summerdikes
       type(t_summerdike), pointer :: summerdike => null() !< pointer to the summerdike data
 

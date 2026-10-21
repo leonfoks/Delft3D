@@ -156,8 +156,12 @@ contains
       nf_numsour = 0
       nf_numsink = 0
       source_sinks%num_nearfield = 0
-      nf_entr_start = 0
-      nf_entr_end = 0
+      ! These two are only allocated by desa(), so a reset before the first
+      ! addNearfieldData meets them unallocated: assigning to an unallocated
+      ! allocatable is not defined and faults on a compiler that zeroes through
+      ! the data pointer.
+      if (allocated(nf_entr_start)) nf_entr_start = 0
+      if (allocated(nf_entr_end)) nf_entr_end = 0
       !
       ! Pointers to data inside COSUMO_BMI
       !
@@ -198,10 +202,10 @@ contains
       if (allocated(nf_numintake_idif)) then
          deallocate (nf_numintake_idif, stat=istat)
       end if
-      if (allocated(nf_sinkid)) then
+      if (allocated(nf_entr_start)) then
          deallocate (nf_entr_start, stat=istat)
       end if
-      if (allocated(nf_sinkid)) then
+      if (allocated(nf_entr_end)) then
          deallocate (nf_entr_end, stat=istat)
       end if
       if (allocated(nf_sinkid)) then

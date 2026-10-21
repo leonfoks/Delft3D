@@ -146,7 +146,8 @@ contains
       end if
 
       ! shortcut to switch off stokes influence
-      if (jawavestokes == 0) then
+      ! FlowWithoutWaves does not allocate ustokes/vstokes, see alloc9basicwavearrays
+      if (jawavestokes == 0 .and. .not. flow_without_waves) then
          ustokes = 0.0_dp
          vstokes = 0.0_dp
       end if

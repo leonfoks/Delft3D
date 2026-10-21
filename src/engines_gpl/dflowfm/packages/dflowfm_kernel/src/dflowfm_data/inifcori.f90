@@ -160,7 +160,11 @@ contains
          end do
       end if
 
-      k = size(fcori)
+      ! fcori only exists for a spherical or beta-plane model; referencing an
+      ! unallocated allocatable (size() included) is not defined and reads
+      ! through the null data pointer.
+      k = 0
+      if (allocated(fcori)) k = size(fcori)
       if (k > 0) then
          !call newfil(msgbu, trim(getoutputdir())//trim(md_ident)//'_Cdwcoeff.tek')
          !call newfil(mout,'fcori.xyz')

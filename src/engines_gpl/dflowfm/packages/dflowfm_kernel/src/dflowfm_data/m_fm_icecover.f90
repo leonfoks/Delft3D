@@ -528,6 +528,10 @@ contains
       integer :: kt !< index of top layer
       real(fp) :: ag_fp !< gravitational acceleration (m/s2)
 
+      ! Without ice in the model ice_data owns no arrays: there is nothing to
+      ! compute, and sizing the disassociated ice_area_fraction is not allowed.
+      if (.not. is_allocated_icecover(ice_data)) return
+
       ag_fp = real(ag, fp)
 
       allocate (water_level_fp(ndx), water_density(ndx))

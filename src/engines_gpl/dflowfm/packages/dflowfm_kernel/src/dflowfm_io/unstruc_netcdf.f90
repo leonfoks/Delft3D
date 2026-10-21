@@ -6685,7 +6685,7 @@ contains
       use netcdf_utils, only: ncu_append_atts
       use m_fm_icecover, only: ice_mapout, ice_s1, ice_zmin, ice_zmax, ice_area_fraction, ice_thickness, ice_pressure, &
                                ice_temperature, qh_air2ice, qh_ice2wat, snow_thickness, snow_temperature, ja_icecover, &
-                               ICECOVER_SEMTNER
+                               ICECOVER_NONE, ICECOVER_SEMTNER
       use m_gettaus
       use m_gettauswave
       use m_get_kbot_ktop
@@ -7983,7 +7983,7 @@ contains
             call definencvar(imapfile, id_air_pressure(iid), nf90_double, idims, 'Patm', 'Atmospheric Pressure', 'N m-2', 'FlowElem_xcc FlowElem_ycc')
          end if
 
-         if (ja_icecover) then
+         if (ja_icecover /= ICECOVER_NONE) then
             if (ice_mapout%ice_s1) then
                call definencvar(imapfile, id_ice_s1(iid), nf90_double, idims, 'ice_s1', 'Sea surface height of open water', 'm', 'FlowElem_xcc FlowElem_ycc')
             end if
@@ -9444,7 +9444,7 @@ contains
          ierr = nf90_put_var(imapfile, id_air_pressure(iid), air_pressure, [1, itim], [ndxndxi, 1])
       end if
 
-      if (ja_icecover) then
+      if (ja_icecover /= ICECOVER_NONE) then
          if (ice_mapout%ice_s1) then
             ierr = nf90_put_var(imapfile, id_ice_s1(iid), ice_s1, [1, itim], [ndxndxi, 1])
          end if

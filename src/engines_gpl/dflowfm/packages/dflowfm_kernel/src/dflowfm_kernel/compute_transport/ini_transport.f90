@@ -200,7 +200,10 @@ contains
          const_names(ispir) = 'secondary_flow_intensity'
       end if
 
-      tracer_limiter_mass_error = 0.0_dp ! initialise mass error counter
+      ! Only alloc_transport allocates these, and it is skipped in a model without
+      ! constituents: whole-array assignment to an unallocated allocatable is not
+      ! defined and writes through the null data pointer.
+      if (allocated(tracer_limiter_mass_error)) tracer_limiter_mass_error = 0.0_dp ! initialise mass error counter
       if (itra1 > 0) then
          do i = itra1, itran
             itrace = i - itra1 + 1
@@ -257,12 +260,12 @@ contains
 !  local timestepping
       time_dtmax = -1.0_dp ! cfl-numbers not evaluated
       nsubsteps = 1
-      ndeltasteps = 1
-      jaupdatehorflux = 1
+      if (allocated(ndeltasteps)) ndeltasteps = 1
+      if (allocated(jaupdatehorflux)) jaupdatehorflux = 1
       numnonglobal = 0
 
 !  sediment advection velocity
-      jaupdateconst = 1
+      if (allocated(jaupdateconst)) jaupdateconst = 1
 
       if (stm_included) then
          if (stmpar%lsedsus > 0) then

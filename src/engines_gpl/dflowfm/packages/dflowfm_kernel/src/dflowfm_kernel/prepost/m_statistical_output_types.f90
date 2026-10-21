@@ -63,7 +63,8 @@ module m_statistical_output_types
       procedure(process_data_interface_double), nopass, pointer :: source_input_function_pointer => null() !< Function pointer for operation that needs to be performed to produce source_input
       real(dp) :: time_step_sum !< Sum of time steps since the last output interval, used for average calculation
       type(t_moving_average_data), allocatable :: moving_average_data !< Data stored for keeping track of a moving average
-      integer :: moving_average_window !< Number of time steps over which a moving average is calculated
+      integer :: moving_average_window = 1 !< Number of time steps over which a moving average is calculated; 1 means no filtering, and is what the
+                                           !! input parser leaves behind for max/min without a window.
    end type t_output_variable_item
 
    !> Derived type to store the cross-section set

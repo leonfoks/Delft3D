@@ -153,7 +153,10 @@ function detect_proj_string(crs) result(ierr)
 
    ierr = 0 ! TODO: AvD
    found = .false.
-   natts = size(crs%attset)
+   natts = 0
+   if (allocated(crs%attset)) then
+      natts = size(crs%attset)
+   end if
    do i=1,natts
       if (strcmpi(crs%attset(i)%attname, 'proj4_params') .and. crs%attset(i)%len > 0) then
          crs%proj_string = char_array_to_string_by_len(crs%attset(i)%strvalue, crs%attset(i)%len)

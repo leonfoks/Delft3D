@@ -58,7 +58,7 @@ module unstruc_caching
 
    logical, private :: cache_success
 
-   character(len=20), dimension(5), private :: section = ['OBSERVATIONS        ', &
+   character(len=20), dimension(5), private :: section = [character(len=20) :: 'OBSERVATIONS        ', &
                                                           'FIXED WEIRS         ', &
                                                           'CROSS_SECTIONS      ', &
                                                           'DRY_POINTS_AND_AREAS', &
@@ -660,6 +660,9 @@ contains
       !
       ! Store data for thin dams
       !
+      if (.not. allocated(cached_thin_dams)) then
+         allocate (cached_thin_dams(0))
+      end if
       write (lun) section(key_thin_dams), size(cached_thin_dams, 1)
       call store_thin_dams(lun, cached_thin_dams)
 

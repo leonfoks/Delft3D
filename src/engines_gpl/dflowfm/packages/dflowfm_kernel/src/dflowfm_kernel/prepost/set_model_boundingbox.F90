@@ -64,7 +64,10 @@ contains
       integer :: ierr !< Result status (DFM_NOERR if successful)
       integer :: n, k, kk, nv
 
-      real(kind=dp), pointer :: lonn(:), latn(:)
+      ! reallocP tests the association status of its argument, so these have to
+      ! start out disassociated: the spherical branch aliases them to xk/yk, the
+      ! other one reallocates them.
+      real(kind=dp), pointer :: lonn(:) => null(), latn(:) => null()
       integer :: make_latlon
 
       ierr = DFM_NOERR

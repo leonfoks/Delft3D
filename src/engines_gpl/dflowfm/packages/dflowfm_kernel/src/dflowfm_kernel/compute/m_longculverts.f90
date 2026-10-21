@@ -143,7 +143,7 @@ contains
       use m_save_ugrid_state, only: nbranchids
       use system_utils, only: split_filename, cat_filename
       use string_module, only: strcmpi
-      use m_filez, only: newfil
+      use m_filez, only: newfil, doclose
       use tree_data_types, only: tree_data
       use tree_structures, only: maxlen
       use m_readCrossSections, only: parseCrossSectionDefinitionFile
@@ -411,7 +411,7 @@ contains
             call SetMessage(LEVEL_ERROR, 'Failed to open file '''//trim(crsdef_output)//''' for writing.')
          else
             call prop_write_inifile(mout, prop_ptr, ierr)
-            close (mout)
+            call doclose(mout)
          end if
       end if
 
@@ -426,6 +426,7 @@ contains
             call SetMessage(LEVEL_ERROR, 'Failed to open file '''//trim(structures_output)//''' for writing.')
          else
             call prop_write_inifile(mout, strs_ptr, ierr)
+            call doclose(mout)
          end if
       end if
       call tree_destroy(strs_ptr)

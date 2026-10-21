@@ -26,7 +26,7 @@ contains
 
       write (value_at_t0_text, '(g0)') value_at_t0
       write (value_at_t100_text, '(g0)') value_at_t100
-      call create_file(file_name, [ &
+      call create_file(file_name, [character(len=73) ::  &
                        '[General]', &
                        '    fileVersion           = 1.01', &
                        '    fileType              = boundConds', &
@@ -50,7 +50,7 @@ contains
       logical, intent(in) :: include_y_force
 
       if (include_y_force) then
-         call create_file(file_name, [ &
+         call create_file(file_name, [character(len=50) ::  &
                           '[Spatial]', &
                           '    quantity        = xwaveforce', &
                           '    forcingFile     = '//FORCE_X_BC_FILE, &
@@ -61,7 +61,7 @@ contains
                           '    forcingFile     = '//FORCE_Y_BC_FILE, &
                           '    forcingFileType = bcascii'])
       else
-         call create_file(file_name, [ &
+         call create_file(file_name, [character(len=50) ::  &
                           '[Spatial]', &
                           '    quantity        = xwaveforce', &
                           '    forcingFile     = '//FORCE_X_BC_FILE, &
@@ -74,7 +74,7 @@ contains
 
       character(len=*), intent(in) :: file_name
 
-      call create_file(file_name, [ &
+      call create_file(file_name, [character(len=50) ::  &
                        '[Spatial]', &
                        '    quantity        = waveperiod', &
                        '    forcingFile     = '//PERIOD_BC_FILE, &
@@ -373,12 +373,12 @@ contains
       use m_alloc, only: realloc
       use m_compute_wave_parameters, only: compute_wave_parameters
       use m_flow, only: epshu, flow_without_waves, hs, jawave, jawavestokes, kmx, s1
-      use m_flowgeom, only: bl, ndx
+      use m_flowgeom, only: bl, lnx, ndx
       use fm_external_forcings_data, only: nbndn, nbndt, nbndu, nbndz, kbndz
       use m_physcoef, only: ag
       use m_sferic, only: pi
       use m_waveconst, only: NO_STOKES_DRIFT, WAVE_SWAN_ONLINE
-      use m_waves, only: default_waves, gammax, hwav, hwavcom, jauorbfromswan, rlabda, twav, twavcom, uorb
+      use m_waves, only: default_waves, gammax, hwav, hwavcom, jauorbfromswan, rlabda, twav, twavcom, uorb, ustokes, vstokes
 
       call default_waves()
       ndx = 2
@@ -391,6 +391,8 @@ contains
       call realloc(twavcom, ndx, fill=0.0_dp, keepExisting=.false.)
       call realloc(uorb, ndx, fill=0.0_dp, keepExisting=.false.)
       call realloc(rlabda, ndx, fill=0.0_dp, keepExisting=.false.)
+      call realloc(ustokes, lnx, fill=0.0_dp, keepExisting=.false.)
+      call realloc(vstokes, lnx, fill=0.0_dp, keepExisting=.false.)
       call realloc(kbndz, [6, 1], fill=0, keepExisting=.false.)
 
       jawave = WAVE_SWAN_ONLINE
@@ -431,6 +433,8 @@ contains
       if (allocated(twavcom)) deallocate (twavcom)
       if (allocated(uorb)) deallocate (uorb)
       if (allocated(rlabda)) deallocate (rlabda)
+      if (allocated(ustokes)) deallocate (ustokes)
+      if (allocated(vstokes)) deallocate (vstokes)
       if (allocated(kbndz)) deallocate (kbndz)
       ndx = 0
       nbndz = 0

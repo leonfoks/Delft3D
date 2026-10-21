@@ -152,12 +152,14 @@ contains
       integer :: n !< Desired new minimum size
       integer :: jaKeepExisting !< Whether or not (1/0) to keep existing points.
       logical :: jakeep
-      integer :: maxpolcur
       integer :: ierr
 
-      maxpolcur = size(xpl)
-      if (N <= maxpolcur) then
-         return
+      ! size() of an unallocated array is not a capacity, so 'N <= 0' must not be read
+      ! as 'already big enough': callers fill xpl/ypl/zpl straight after asking to grow.
+      if (allocated(xpl)) then
+         if (N <= size(xpl)) then
+            return
+         end if
       end if
       MAXPOL = max(100000, int(5d0 * N))
 
