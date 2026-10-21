@@ -630,8 +630,15 @@ contains
 
       if (present(nc_attributes)) then
          num_attributes = size(nc_attributes)
-         call realloc(config_set%configs(num_entries)%additional_attributes, num_attributes, keepExisting=.false.)
-         config_set%configs(num_entries)%additional_attributes%count = num_attributes
+      else
+         num_attributes = 0
+      end if
+      ! atts must stay allocated even when empty: it is handed on to
+      ! definencvar as an optional array, and an empty array reports size 0
+      ! there, whereas a disassociated pointer does not.
+      call realloc(config_set%configs(num_entries)%additional_attributes, num_attributes, keepExisting=.false.)
+      config_set%configs(num_entries)%additional_attributes%count = num_attributes
+      if (present(nc_attributes)) then
          config_set%configs(num_entries)%additional_attributes%atts = nc_attributes
       end if
 
