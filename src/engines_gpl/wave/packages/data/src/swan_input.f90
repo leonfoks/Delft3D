@@ -1467,7 +1467,7 @@ contains
          write (*, *) 'SWAN_INPUT: Tolerances specified for both "num_accur" and "num_stopc"'
          call handle_errors_mdw(sr)
       end if
-      if (enable_num_accur == .false. .and. enable_num_stopc == .false.) then
+      if (.not. enable_num_accur .and. .not. enable_num_stopc) then
          enable_num_stopc = .true.
       end if
       if (enable_num_stopc) then

@@ -43,7 +43,7 @@ subroutine rdmor(lundia    ,error     ,filmor_in ,lsec      ,lsedtot   , &
                & nambnd    ,julday    ,mor_ptr   ,sedpar    ,morpar    , &
                & fwfac     ,morlyr    ,griddim   ,ag)
 !!--declarations----------------------------------------------------------------
-    use precision, only: fp
+    use precision, only: fp, dp
     use properties
     use table_handles
     use bedcomposition_module

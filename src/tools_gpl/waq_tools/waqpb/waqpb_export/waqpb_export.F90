@@ -41,6 +41,7 @@ program waqpb_export
    use m_waqpb_export_settings
    use m_cli_utils
    use m_waqpb_data
+   use system_utils, only: directory_exists
 
    implicit none
 
@@ -61,7 +62,7 @@ program waqpb_export
 
    call settings%init()
 
-   inquire (directory=settings%process_definition_folder_path, exist=status)
+   status = directory_exists(settings%process_definition_folder_path)
    if (.not. status) then
       write (*, '(A,A,A)') 'Error: "', trim(settings%process_definition_folder_path), '" is not a valid path for the process definition folder.'
       stop 1

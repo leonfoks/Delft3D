@@ -2026,7 +2026,7 @@ contains
       use m_mathconstants, only: pi
       use m_filez, only: doclose
       use m_physcoef, only: dicoww
-      use m_array_or_scalar, only: realloc
+      use m_alloc, only: realloc
       use m_cellmask_from_polygon_set, only: t_netcell_set
       use unstruc_inifields, only: finalize_1dfield_global_values
       use network_data, only: LINK_1D

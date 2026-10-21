@@ -307,7 +307,7 @@ module test_time_module
 
       subroutine test_ymd2modified_jul_string_valid
          integer, parameter           :: nr_cases = 9
-         character(len=16), parameter :: date(nr_cases) = (/ &
+         character(len=16), parameter :: date(nr_cases) = (/character(len=18) :: &
             "20200904        ", &   ! no separat
             "0020200904        ", & ! no separators, six digit year
             "2020-09-04      ", &   ! - separators

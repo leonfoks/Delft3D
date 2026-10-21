@@ -979,7 +979,7 @@ contains
 
       real(kind=dp), dimension(:), allocatable :: xpoly, ypoly
       integer, dimension(:), allocatable :: crossed_cells
-      character, dimension(:), allocatable :: error
+      character(len=:), allocatable :: error
       integer :: i
       logical :: found_cell
       type(t_netcell_set) :: netcell_cache
@@ -1047,7 +1047,7 @@ contains
 
       real(kind=dp), dimension(:), allocatable :: xpoly, ypoly
       integer, dimension(:), allocatable :: crossed_cells
-      character, dimension(:), allocatable :: error
+      character(len=:), allocatable :: error
       integer :: i
       logical :: found_cell
       type(t_netcell_set) :: netcell_cache
@@ -1109,7 +1109,7 @@ contains
 
       real(kind=dp), dimension(:), allocatable :: xpoly, ypoly
       integer, dimension(:), allocatable :: crossed_cells
-      character, dimension(:), allocatable :: error
+      character(len=:), allocatable :: error
       integer :: i
       logical :: found_cell
       type(t_netcell_set) :: netcell_cache

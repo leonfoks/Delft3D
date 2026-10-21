@@ -48,7 +48,7 @@ contains
 
       character(len=*), intent(inout) :: value_string !< value_string in which to read the first entry. After reading, that piece will be removed from the front of the string, to enable repeated calls.
       integer, intent(out) :: operation_type !< The parsed operation_type (one of SO_CURRENT/AVERAGE/MAX/MIN/ALL)
-      integer, intent(out) :: moving_average_window !< Optional value for number of timesteps in moving average (only for max and min), 0 when unspecified in input.
+      integer, intent(out) :: moving_average_window !< Optional value for number of timesteps in moving average (only for max and min), 1 (no filtering) when unspecified in input.
       integer :: ierr !< Result status: SO_NOERR on successful read, SO_INVALID_CONFIG for invalid value_string, SO_EOR if no further entries in string.
 
       character(len=16) :: operation_string
@@ -121,13 +121,15 @@ contains
    !> Test if any output is requested in the value string
    function is_output_requested_in_value_string(value_string) result(res)
       use m_statistical_output_types, only: SO_UNKNOWN, SO_NONE
-      character(*), value :: value_string !< The string provided as a value in the MDU file
+      character(*), intent(in) :: value_string !< The string provided as a value in the MDU file
       logical :: res
 
       integer :: ierr, operation_type, moving_average_window
+      character(len=len(value_string)) :: remaining_value_string
       res = .false.
+      remaining_value_string = value_string
       do
-         ierr = parse_next_stat_type_from_value_string(value_string, operation_type, moving_average_window)
+         ierr = parse_next_stat_type_from_value_string(remaining_value_string, operation_type, moving_average_window)
          if (ierr /= SO_NOERR) then
             ! Either an error or the end of the record. Other parts are responsible to catch these errors
             exit

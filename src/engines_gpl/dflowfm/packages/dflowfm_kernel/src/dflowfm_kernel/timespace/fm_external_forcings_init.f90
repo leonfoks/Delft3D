@@ -664,7 +664,7 @@ contains
 
       ! Local variables
       logical :: has_node_id, has_branch_id, has_chainage, has_num_coordinates, has_location_file, has_x_coordinates, has_y_coordinates
-      integer :: number_of_discharge_specifications, ierr
+      integer :: number_of_discharge_specifications, ierr, i
       integer, parameter :: MAXIMUM_NUMBER_OF_DISCHARGE_SPECIFICATIONS = 4
 
       ! Initialization
@@ -685,7 +685,7 @@ contains
       has_location_file = has_key(block_ptr, 'Lateral', 'locationFile')
 
       ! Test if multiple discharge methods were set
-      number_of_discharge_specifications = sum([(1, integer :: i=1, MAXIMUM_NUMBER_OF_DISCHARGE_SPECIFICATIONS)], [has_node_id, has_branch_id .or. has_chainage, has_num_coordinates .or. has_x_coordinates .or. has_y_coordinates, has_location_file])
+      number_of_discharge_specifications = sum([(1, i=1, MAXIMUM_NUMBER_OF_DISCHARGE_SPECIFICATIONS)], [has_node_id, has_branch_id .or. has_chainage, has_num_coordinates .or. has_x_coordinates .or. has_y_coordinates, has_location_file])
 
       if (number_of_discharge_specifications < 1) then
          call mess(LEVEL_ERROR, 'Lateral '''//trim(loc_id)//''': No discharge specifications found. Use nodeId, branchId + chainage, numCoordinates + xCoordinates + yCoordinates, or locationFile.')
@@ -1544,7 +1544,7 @@ contains
          success = .false.
       end select
 
-      if (success == .false.) then
+      if (.not. success) then
          success = .true.
          select case (str_tolower(qid_base))
          case ('initialwaterdepth', 'waterdepth')
@@ -1864,7 +1864,7 @@ contains
       real(kind=dp), dimension(:), allocatable :: polygon_y_coordinates !< y-coordinates of bubblescreen
       real(kind=dp), dimension(:), allocatable :: polygon_z_coordinates !< z-coordinates of bubblescreen (unused, required by generic reader)
       character(len=:), allocatable :: group_name !< Name of the block, only used in error messages
-      character, dimension(:), allocatable :: error
+      character(len=:), allocatable :: error
 
       type(tree_data), pointer :: block_ptr
       type(t_Bubblescreen) :: bubblescreen

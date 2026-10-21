@@ -1451,9 +1451,10 @@ contains
       integer, allocatable :: counts(:) !< NetCDF dimension counts
 
       integer, allocatable :: dim_ids(:)
+      integer :: i
 
       dim_ids = build_nc_dimension_id_list(nc_dim_ids)
-      counts = [(get_dimid_len(ihisfile, dim_ids(i)), integer :: i=1, size(dim_ids))]
+      counts = [(get_dimid_len(ihisfile, dim_ids(i)), i=1, size(dim_ids))]
       if (nc_dim_ids%timedim) then
          counts(size(counts)) = 1 ! Only write one element for time dimension, which comes last
       end if
@@ -1499,6 +1500,7 @@ contains
       integer :: local_id_var, station_id_index
       integer, allocatable :: counts(:), starts(:), positions(:)
       real(kind=dp), allocatable :: transformed_data(:)
+      integer :: i
 
       local_id_var = output_variable_item%id_var
 
@@ -1510,7 +1512,7 @@ contains
          counts = build_nc_dimension_id_count_array(nc_dim_ids, ihisfile)
          starts = build_nc_dimension_id_start_array(nc_dim_ids, it_his)
 
-         positions = [(i, integer :: i=1, size(counts))]
+         positions = [(i, i=1, size(counts))]
          station_id_index = findloc(build_nc_dimension_id_list(nc_dim_ids), value=id_statdim, dim=1)
       end associate
 
@@ -1559,11 +1561,11 @@ contains
       structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), integer :: i=1, network%sts%numOrifices)]
       call unc_put_his_structure_names(ncid, his_write_settings%orifice, id_orifgen_id, structure_names)
 
-      structure_names = [(pump_ids(i), integer :: i=1, npumpsg)]
+      structure_names = [(pump_ids(i), i=1, npumpsg)]
       call unc_put_his_structure_names(ncid, his_write_settings%pump, id_pump_id, structure_names)
       call unc_put_his_structure_mid_points(ncid, ST_PUMP, his_write_settings%pump, npumpsg, 'line', id_poly_xmid=id_pump_xmid, id_poly_ymid=id_pump_ymid)
 
-      structure_names = [(gate_ids(i), integer :: i=1, ngatesg)]
+      structure_names = [(gate_ids(i), i=1, ngatesg)]
       call unc_put_his_structure_names(ncid, his_write_settings%gate, id_gate_id, structure_names)
 
       if (jaoldstr == 1) then
@@ -1572,8 +1574,8 @@ contains
          indices = [(network%sts%generalStructureIndices(i), integer :: i=1, ngenstru)]
          structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), integer :: i=1, ngenstru)]
       else
-         indices = [(genstru2cgen(i), integer :: i=1, ngenstru)]
-         structure_names = [(cgen_ids(indices(i)), integer :: i=1, ngenstru)]
+         indices = [(genstru2cgen(i), i=1, ngenstru)]
+         structure_names = [(cgen_ids(indices(i)), i=1, ngenstru)]
       end if
       call unc_put_his_structure_names(ncid, his_write_settings%cgen, id_genstru_id, structure_names)
 
@@ -1592,46 +1594,46 @@ contains
       structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), integer :: i=1, network%sts%numBridges)]
       call unc_put_his_structure_names(ncid, his_write_settings%bridge, id_bridge_id, structure_names)
 
-      structure_names = [(network%cmps%compound(i)%id, integer :: i=1, network%cmps%count)]
+      structure_names = [(network%cmps%compound(i)%id, i=1, network%cmps%count)]
       call unc_put_his_structure_names(ncid, his_write_settings%compound_structure, id_cmpstru_id, structure_names)
 
-      structure_names = [(longculverts(i)%id, integer :: i=1, nlongculverts)]
+      structure_names = [(longculverts(i)%id, i=1, nlongculverts)]
       call unc_put_his_structure_names(ncid, his_write_settings%long_culvert, id_longculvert_id, structure_names)
 
-      structure_names = [(cdam_ids(i), integer :: i=1, ncdamsg)]
+      structure_names = [(cdam_ids(i), i=1, ncdamsg)]
       call unc_put_his_structure_names(ncid, his_write_settings%cdam, id_cdam_id, structure_names)
 
-      structure_names = [(namobs(i), integer :: i=1, numobs + nummovobs)]
+      structure_names = [(namobs(i), i=1, numobs + nummovobs)]
       call unc_put_his_structure_names(ncid, 1, id_statname, structure_names)
 
-      structure_names = [(crs(i)%name, integer :: i=1, ncrs)]
+      structure_names = [(crs(i)%name, i=1, ncrs)]
       call unc_put_his_structure_names(ncid, 1, id_crs_id, structure_names)
 
-      structure_names = [(rug(i)%name, integer :: i=1, num_rugs)]
+      structure_names = [(rug(i)%name, i=1, num_rugs)]
       call unc_put_his_structure_names(ncid, 1, id_rugname, structure_names)
 
       if (allocated(source_sinks%name)) then
          structure_names = pack(source_sinks%name, source_sinks%is_normal)
       else
-         structure_names = [(source_sinks%name(i), integer :: i=1, source_sinks%num_total)]
+         structure_names = [(source_sinks%name(i), i=1, source_sinks%num_total)]
       end if
       ! structure_names = pack(source_sink_name, is_source_sink_real)
       call unc_put_his_structure_names(ncid, his_write_settings%sourcesink, id_srcname, structure_names)
 
-      structure_names = [(bubblescreens(i)%id, integer :: i=1, size(bubblescreens))]
+      structure_names = [(bubblescreens(i)%id, i=1, size(bubblescreens))]
       call unc_put_his_structure_names(ncid, his_write_settings%bubblescreens, id_bubblescreen_name, structure_names)
 
       if (network%sts%numGates > 0) then
          indices = [(network%sts%gateIndices(i), integer :: i=1, ngategen)]
          structure_names = [(trimexact(network%sts%struct(network%sts%gateIndices(i))%id, strlen_netcdf), integer :: i=1, ngategen)]
       else
-         indices = [(gate2cgen(i), integer :: i=1, ngategen)]
-         structure_names = [(cgen_ids(indices(i)), integer :: i=1, ngategen)]
+         indices = [(gate2cgen(i), i=1, ngategen)]
+         structure_names = [(cgen_ids(indices(i)), i=1, ngategen)]
       end if
 
       call unc_put_his_structure_names(ncid, his_write_settings%gate, id_gategen_id, structure_names)
 
-      structure_names = [(lat_ids(i), integer :: i=1, numlatsg)]
+      structure_names = [(lat_ids(i), i=1, numlatsg)]
       call unc_put_his_structure_names(ncid, his_write_settings%lateral, id_lat_id, structure_names)
    end subroutine unc_put_his_structure_static_vars
 

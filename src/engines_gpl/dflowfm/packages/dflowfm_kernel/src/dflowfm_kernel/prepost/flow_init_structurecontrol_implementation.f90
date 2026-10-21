@@ -72,6 +72,7 @@ contains
       integer, dimension(:), allocatable :: lftopol
       integer :: i_status !< status of the function
       real(kind=dp), pointer :: tgtarr(:)
+      type(c_ptr) :: cptr
       integer :: loc_spec_type
 
       ! initialize exit status
@@ -98,7 +99,8 @@ contains
             end if
             ! Time-interpolated value will be placed in structure's appropriate member field, available in
             ! %targetptr, when calling ec_gettimespacevalue.
-            call c_f_pointer(c_loc(pfrc%targetptr), tgtarr, [1])
+            cptr = c_loc(pfrc%targetptr)
+            call c_f_pointer(cptr, tgtarr, [1])
             success = adduniformtimerelation_objects(qid, '', trim(pfrc%object_type), trim(pfrc%object_id), &
                                                      trim(pfrc%param_name), filename, 1, 1, tgtarr)
          end associate

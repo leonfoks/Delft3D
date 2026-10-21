@@ -531,7 +531,6 @@ contains
       use m_check_positive_value, only: check_positive_value
       use m_add_baroclinic_pressure, only: rhointerfaces
       use m_flow_validatestate_data
-      use m_array_or_scalar, only: realloc
       use precision_basics, only: equal
 
       character(*), intent(in) :: filename !< Name of file to be read (the MDU file must be in current working directory).
@@ -550,6 +549,9 @@ contains
       integer :: jadum
       real(hp) :: ti_rst_array(3), ti_map_array(3), ti_his_array(3), ti_wav_array(3), ti_waq_array(3), ti_classmap_array(3), ti_st_array(3), ti_com_array(3)
       character(len=200), dimension(:), allocatable :: fnames
+      character(len=256) :: fname_errmsg
+      character(len=320) :: fname_msg
+      logical :: fname_exists
       real(kind=dp) :: tim
       real(kind=dp) :: sumlaycof
       real(kind=dp), parameter :: tolSumLay = 1.0e-12_dp
@@ -743,7 +745,7 @@ contains
 
       call prop_get(md_ptr, 'geometry', 'Numtopsig', Numtopsig, success)
       if (success .and. numtopsig > 0 .and. layertype /= LAYTP_Z) then
-         write (msgbuf, '(a,i0,a)'), 'The model definition file sets numtopsig to ', numtopsig, &
+         write (msgbuf, '(a,i0,a)') 'The model definition file sets numtopsig to ', numtopsig, &
             ', but layertype is not 2 (z-layers or z-sigma-layers). Continuing with numtopsig = 0.'
          call warn_flush()
          numtopsig = 0
@@ -764,7 +766,7 @@ contains
          if (.not. success) then
             stretch_type = STRETCH_UNI_OVER_EXP
          elseif (dztop > 0.0_dp .and. stretch_type /= STRETCH_UNI_OVER_EXP) then
-            write (msgbuf, '(a,a,i0,a)'), &
+            write (msgbuf, '(a,a,i0,a)') &
                'A positive dzTop value requires stretchType = -1 (uniform over exponential). ', &
                'Input stretchType = ', stretch_type, ' is ignored.'
             call warn_flush()
@@ -2432,9 +2434,13 @@ contains
             call split_filename(fnames(ifil), md_structurefile_dir, fnam) ! Remember base dir for this structures.ini file
 
             ! TODO: AvD: here we should actually filter out the [structure] blocks only, others may be in the file too
-            call prop_file('ini', fnames(ifil), strs_ptr, istat)
+            inquire (file=fnames(ifil), exist=fname_exists)
+            fname_errmsg = ' '
+            call prop_file('ini', fnames(ifil), strs_ptr, istat, fname_errmsg)
             if (istat /= 0) then
-               call mess(LEVEL_ERROR, 'Failed to read structure data from '''//trim(fnames(ifil))//''' not found. Code: ', istat)
+               write (fname_msg, '(a,i0,a,l1,a)') 'Failed to read structure data from '''//trim(fnames(ifil))//'''. Code: ', istat, &
+                  ', file exists: ', fname_exists, ', iomsg: '
+               call mess(LEVEL_ERROR, trim(fname_msg)//trim(fname_errmsg))
             else
                call mess(LEVEL_INFO, 'Read Structure data from ', trim(fnames(ifil)))
             end if
@@ -3597,7 +3603,7 @@ contains
          end if
       end if
 
-      if (jaspacevarcharn .and. (wind_drag_type /= CD_TYPE_CHARNOCK1955 .and. wind_drag_type /= CD_TYPE_CHARNOCK_PLUS_VISCOUS)) then
+      if (jaspacevarcharn == 1 .and. (wind_drag_type /= CD_TYPE_CHARNOCK1955 .and. wind_drag_type /= CD_TYPE_CHARNOCK_PLUS_VISCOUS)) then
          write (msgbuf, '(a,i0,a)') &
             'Inconsistent configuration: a time- and space-varying Charnock coefficient was '// &
             'specified in the .ext file, but [wind] ICdtyp is set to ', &

@@ -98,7 +98,7 @@ module m_laterals
       procedure :: update => update_flow_parameter !< Update flow_parameter, perform averaging
    end type t_flow_parameter
 
-   interface initialize_flow_parameter
+   interface
       module subroutine initialize_flow_parameter(this, num_elements, input_variable, weighing_variable, &
                                                   index_start, index_end, index_to_node)
          class(t_flow_parameter), intent(inout) :: this !< Flow parameter object
@@ -108,13 +108,13 @@ module m_laterals
          integer, dimension(:), pointer, intent(in) :: index_start, index_end !< Indexing parameters for mapping input variable to flow parameter locations.
          integer, dimension(:), pointer, intent(in) :: index_to_node !< Index mapping to flow nodes.
       end subroutine initialize_flow_parameter
-   end interface initialize_flow_parameter
+   end interface
 
-   interface update_flow_parameter
+   interface
       module subroutine update_flow_parameter(this)
          class(t_flow_parameter), intent(inout) :: this
       end subroutine update_flow_parameter
-   end interface update_flow_parameter
+   end interface
 
    type(t_flow_parameter), public, target :: average_waterlevels_per_lateral !< Flow parameter structure for laterals concentration.
 

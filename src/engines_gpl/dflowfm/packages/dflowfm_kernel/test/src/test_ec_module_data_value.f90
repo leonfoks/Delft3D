@@ -38,7 +38,7 @@ contains
       wx = dmiss
       wy = dmiss
 
-      call create_file(BC_FILE, [ &
+      call create_file(BC_FILE, [character(len=31) ::  &
          "[General]", &
          "fileVersion = 1.01", &
          "fileType = boundConds", &
@@ -134,7 +134,7 @@ contains
       wx = dmiss
       wy = dmiss
 
-      call create_file(BC_FILE, [ &
+      call create_file(BC_FILE, [character(len=31) ::  &
          "[General]", &
          "fileVersion = 1.01", &
          "fileType = boundConds", &
@@ -211,7 +211,7 @@ contains
       wx = dmiss
       wy = dmiss
 
-      call create_file(BC_FILE, [ &
+      call create_file(BC_FILE, [character(len=31) ::  &
          "[General]", &
          "fileVersion = 1.01", &
          "fileType = boundConds", &
@@ -309,7 +309,7 @@ contains
       allocate(solar_radiation(1))
       solar_radiation = dmiss
 
-      call create_file(BC_FILE, [ &
+      call create_file(BC_FILE, [character(len=31) ::  &
          "[General]", &
          "fileVersion = 1.01", &
          "fileType = boundConds", &

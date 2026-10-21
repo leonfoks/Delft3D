@@ -59,7 +59,7 @@ module fm_external_forcings_update
    use dfm_error, only: dfm_noerr, dfm_extforcerror
    use m_calibration, only: calibration_backup_frcu
    use unstruc_channel_flow, only: network
-   use time_class, only: c_time, ecgetvalues
+   use time_class, only: c_time
    use m_longculverts_data, only: nlongculverts
    use m_nearfield, only: nearfield_mode, NEARFIELD_UPDATED, addNearfieldData
    use m_airdensity, only: get_airdensity
@@ -563,6 +563,7 @@ contains
 
    !> set_wave_parameters
    subroutine set_wave_parameters(initialization)
+      use precision, only: dp
       use ieee_arithmetic, only: ieee_is_nan
       use m_compute_wave_parameters, only: compute_wave_parameters
       use unstruc_messages, only: callback_msg
@@ -762,6 +763,7 @@ contains
 
    !> Read only the offline wave quantities required by the active configuration.
    subroutine set_offline_wave_parameters()
+      use precision, only: dp
       ! EC owns the raw source fields. Reset only FM-derived fields before
       ! calculating them from the values EC provides.
       hwav(:) = 0.0_dp
@@ -951,6 +953,7 @@ contains
 
    !> prepare_air_pressure_temperature_dew_point_temperature
    subroutine prepare_air_pressure_temperature_dew_point_temperature(time_in_seconds)
+      use precision, only: dp
       use m_meteo, only: item_apwxwy_p, item_airpressure, item_hac_air_temperature, item_hacs_air_temperature, &
          item_dac_air_temperature, item_dacs_air_temperature, item_air_temperature, item_dac_dew_point_temperature, &
          item_dacs_dew_point_temperature, item_dew_point_temperature
@@ -978,6 +981,7 @@ contains
 
    !> Prepare wind data if jawind=1 and air_pressure_available
    subroutine prepare_wind(time_in_seconds, iresult)
+      use precision, only: dp
       use m_wind, only: jawind, air_pressure_available
       use dfm_error, only: DFM_NOERR
 
