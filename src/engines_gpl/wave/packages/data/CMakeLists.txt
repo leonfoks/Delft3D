@@ -65,8 +65,14 @@ if (UNIX)
                             io_netcdf_data
                             nefis
                             netCDF::netcdff
-                            stdc++
     )
+
+    # The C++ objects need a C++ runtime; Linux calls it libstdc++, macOS libc++.
+    if (APPLE)
+        list(APPEND oss_dependencies c++)
+    else()
+        list(APPEND oss_dependencies stdc++)
+    endif()
 
     target_link_libraries(${library_name} ${oss_dependencies})
 

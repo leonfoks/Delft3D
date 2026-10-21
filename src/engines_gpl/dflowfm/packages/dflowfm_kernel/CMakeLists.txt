@@ -172,8 +172,11 @@ target_link_libraries(${library_name} PRIVATE
 if (UNIX)
     target_link_libraries(${library_name} PRIVATE
                           interacter_stub
-                          uuid
     )
+    # uuid_generate comes from libuuid on Linux, from libSystem on macOS.
+    if(NOT APPLE)
+        target_link_libraries(${library_name} PRIVATE uuid)
+    endif()
 endif(UNIX)
 
 if (WIN32)

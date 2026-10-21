@@ -19,10 +19,11 @@ create_target(
 set(oss_dependencies waq_external_access_layer
         waq_logging)
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
+        # uuid_generate comes from libuuid on Linux, from libSystem on macOS.
         target_link_libraries(${executable_name} PRIVATE
                 uuid)
-endif(UNIX)
+endif()
 
 target_link_libraries(${executable_name} PRIVATE ${oss_dependencies})
 

@@ -95,6 +95,18 @@ static __inline__ unsigned long long rdtsc(void)
     return ((unsigned long long)lo) | (((unsigned long long)hi) << 32);
 }
 
+    #elif defined(__aarch64__) || defined(__arm64__)
+
+/* The virtual counter, which is a fixed-frequency count readable from EL0 on
+ * both Linux and Apple silicon. Like rdtsc it reports the counter's frequency
+ * rather than the core clock. */
+static __inline__ unsigned long long rdtsc(void)
+{
+    unsigned long long x;
+    __asm__ __volatile__("mrs %0, cntvct_el0" : "=r"(x));
+    return x;
+}
+
     #endif
 
 unsigned long long CpuInfo::GetClockSpeed()

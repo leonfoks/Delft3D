@@ -45,8 +45,11 @@ if(WIN32)
 endif(WIN32)
 
 if(UNIX)
-        target_link_libraries(${library_name} PRIVATE ${oss_dependencies}
-                uuid)
+        target_link_libraries(${library_name} PRIVATE ${oss_dependencies})
+        # uuid_generate comes from libuuid on Linux, from libSystem on macOS.
+        if(NOT APPLE)
+                target_link_libraries(${library_name} PRIVATE uuid)
+        endif()
         target_link_options(${library_name} PRIVATE ${openmp_flag})
 endif(UNIX)
 

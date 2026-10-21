@@ -39,7 +39,7 @@
 /*
  *   Comment:
  */
-#if defined(linux)
+#if defined(linux) || defined(__APPLE__)
     #include "config.h"
 #endif
 
@@ -69,7 +69,7 @@
     #define FILE_READ _read
     #define FILE_SEEK _lseeki64
     #define FILE_WRITE _write
-#elif defined(linux)
+#elif defined(linux) || defined(__APPLE__)
     #define FILE_READ read
     #define FILE_SEEK lseek
     #define FILE_WRITE write

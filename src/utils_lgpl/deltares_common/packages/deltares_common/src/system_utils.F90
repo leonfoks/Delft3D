@@ -36,11 +36,24 @@ module system_utils
    implicit none
    private
 
-#if (defined(__linux__))
+! The preprocessor of GNU Fortran defines none of the platform macros (not even
+! __APPLE__), so the build system names the operating system instead.
+#if !defined(DELFT3D_UNIX) && (defined(__linux__) || defined(__APPLE__))
+#define DELFT3D_UNIX 1
+#endif
+#if !defined(DELFT3D_MACOS) && defined(__APPLE__)
+#define DELFT3D_MACOS 1
+#endif
+
+#if defined(DELFT3D_UNIX)
    character(5), parameter, public :: ARCH = 'linux'
    character(3), parameter, public :: SCRIPT_EXTENSION = '.sh'
    character(3), parameter, public :: SHARED_LIB_PREFIX = 'lib'
+#if defined(DELFT3D_MACOS)
+   character(6), parameter, public :: SHARED_LIB_EXTENSION = '.dylib'
+#else
    character(3), parameter, public :: SHARED_LIB_EXTENSION = '.so'
+#endif
    character(1), parameter, public :: FILESEP = '/'
 
    character(1), parameter, public :: FILESEP_OTHER_ARCH = '\'
@@ -104,7 +117,7 @@ contains
 
       ierr = 0
       exe_full_path = ''
-#if (defined(__linux__))
+#if defined(DELFT3D_UNIX) && !defined(DELFT3D_MACOS)
       path_length = readlink('/proc/self/exe'//c_null_char, c_buffer, size(c_buffer, kind=c_size_t))
       if (path_length == -1) then
          ierr = -1

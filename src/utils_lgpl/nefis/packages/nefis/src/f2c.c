@@ -72,7 +72,7 @@
  * MIXED_STR_LEN_ARG: string length argument direct behind the string
  */
 
-#if defined(linux)
+#if defined(linux) || defined(__APPLE__)
     #include "config.h"
     #define FTN_CALL /* nothing */
     #define CLOSE_DAT_FILE FC_FUNC(cldtnf, CLDTNF)

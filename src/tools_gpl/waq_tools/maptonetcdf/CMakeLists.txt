@@ -15,8 +15,12 @@ if (UNIX)
     set(oss_dependencies ${oss_dependencies_general})
 
     target_link_libraries(${executable_name} PRIVATE
-         ${oss_dependencies}
-         uuid)
+         ${oss_dependencies})
+
+    # uuid_generate comes from libuuid on Linux, from libSystem on macOS.
+    if(NOT APPLE)
+        target_link_libraries(${executable_name} PRIVATE uuid)
+    endif()
 endif(UNIX)
 
 if (WIN32)

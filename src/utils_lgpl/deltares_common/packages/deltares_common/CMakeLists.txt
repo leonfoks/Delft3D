@@ -55,6 +55,12 @@ target_link_libraries(${library_name} PRIVATE deltares_common_c)
 
 if(UNIX)
    add_definitions(-DHAVE_CONFIG_H=1)
+   # system_utils.F90 selects its paths and library names per operating system, and
+   # the preprocessor of GNU Fortran defines no platform macros to do that with.
+   add_definitions(-DDELFT3D_UNIX=1)
+   if(APPLE)
+      add_definitions(-DDELFT3D_MACOS=1)
+   endif()
 endif(UNIX)
 
 target_include_directories(${library_name}  PRIVATE ${version_include_dir})
