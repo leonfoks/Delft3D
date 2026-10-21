@@ -1545,20 +1545,30 @@ contains
 
       character(len=strlen_netcdf), dimension(:), allocatable :: structure_names
       integer, dimension(:), allocatable :: indices
+      integer :: i
 
-      if (allocated(weir2cgen)) then
-         indices = [(weir2cgen(i), integer :: i=1, nweirgen)]
-         structure_names = [(trimexact(cgen_ids(indices(i)), strlen_netcdf), integer :: i=1, nweirgen)]
-      else if (network%sts%numWeirs > 0) then
-         indices = [(network%sts%weirIndices(i), integer :: i=1, nweirgen)]
-         structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), integer :: i=1, nweirgen)]
+      ! A structure type may be absent, so its count can be zero. An array
+      ! constructor with a zero trip count must not evaluate its element, but
+      ! gfortran evaluates an element whose length is only known at run time
+      ! (the trimexact calls below) regardless, reading past the empty index
+      ! arrays; the counts below therefore keep every constructor non-empty.
+      if (allocated(weir2cgen) .and. nweirgen > 0) then
+         indices = [(weir2cgen(i), i=1, nweirgen)]
+         structure_names = [(trimexact(cgen_ids(indices(i)), strlen_netcdf), i=1, nweirgen)]
+      else if (network%sts%numWeirs > 0 .and. nweirgen > 0) then
+         indices = [(network%sts%weirIndices(i), i=1, nweirgen)]
+         structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), i=1, nweirgen)]
       else
          allocate (structure_names(0))
       end if
       call unc_put_his_structure_names(ncid, his_write_settings%weir, id_weirgen_id, structure_names)
 
-      indices = [(network%sts%orificeIndices(i), integer :: i=1, network%sts%numOrifices)]
-      structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), integer :: i=1, network%sts%numOrifices)]
+      if (network%sts%numOrifices > 0) then
+         indices = [(network%sts%orificeIndices(i), i=1, network%sts%numOrifices)]
+         structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), i=1, network%sts%numOrifices)]
+      else
+         structure_names = [character(len=strlen_netcdf) ::]
+      end if
       call unc_put_his_structure_names(ncid, his_write_settings%orifice, id_orifgen_id, structure_names)
 
       structure_names = [(pump_ids(i), i=1, npumpsg)]
@@ -1569,29 +1579,41 @@ contains
       call unc_put_his_structure_names(ncid, his_write_settings%gate, id_gate_id, structure_names)
 
       if (jaoldstr == 1) then
-         structure_names = [(cgen_ids(i), integer :: i=1, ncgensg)]
-      else if (network%sts%numGeneralStructures > 0) then
-         indices = [(network%sts%generalStructureIndices(i), integer :: i=1, ngenstru)]
-         structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), integer :: i=1, ngenstru)]
+         structure_names = [(cgen_ids(i), i=1, ncgensg)]
+      else if (network%sts%numGeneralStructures > 0 .and. ngenstru > 0) then
+         indices = [(network%sts%generalStructureIndices(i), i=1, ngenstru)]
+         structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), i=1, ngenstru)]
       else
          indices = [(genstru2cgen(i), i=1, ngenstru)]
          structure_names = [(cgen_ids(indices(i)), i=1, ngenstru)]
       end if
       call unc_put_his_structure_names(ncid, his_write_settings%cgen, id_genstru_id, structure_names)
 
-      indices = [(network%sts%uniweirIndices(i), integer :: i=1, network%sts%numuniweirs)]
-      structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), integer :: i=1, network%sts%numuniweirs)]
+      if (network%sts%numuniweirs > 0) then
+         indices = [(network%sts%uniweirIndices(i), i=1, network%sts%numuniweirs)]
+         structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), i=1, network%sts%numuniweirs)]
+      else
+         structure_names = [character(len=strlen_netcdf) ::]
+      end if
       call unc_put_his_structure_names(ncid, his_write_settings%universal_weir, id_uniweir_id, structure_names)
 
       structure_names = get_dambreak_names()
       call unc_put_his_structure_names(ncid, his_write_settings%dambreak, id_dambreak_id, structure_names)
 
-      indices = [(network%sts%culvertIndices(i), integer :: i=1, network%sts%numCulverts)]
-      structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), integer :: i=1, network%sts%numCulverts)]
+      if (network%sts%numCulverts > 0) then
+         indices = [(network%sts%culvertIndices(i), i=1, network%sts%numCulverts)]
+         structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), i=1, network%sts%numCulverts)]
+      else
+         structure_names = [character(len=strlen_netcdf) ::]
+      end if
       call unc_put_his_structure_names(ncid, his_write_settings%culvert, id_culvert_id, structure_names)
 
-      indices = [(network%sts%bridgeIndices(i), integer :: i=1, network%sts%numBridges)]
-      structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), integer :: i=1, network%sts%numBridges)]
+      if (network%sts%numBridges > 0) then
+         indices = [(network%sts%bridgeIndices(i), i=1, network%sts%numBridges)]
+         structure_names = [(trimexact(network%sts%struct(indices(i))%id, strlen_netcdf), i=1, network%sts%numBridges)]
+      else
+         structure_names = [character(len=strlen_netcdf) ::]
+      end if
       call unc_put_his_structure_names(ncid, his_write_settings%bridge, id_bridge_id, structure_names)
 
       structure_names = [(network%cmps%compound(i)%id, i=1, network%cmps%count)]
@@ -1623,9 +1645,9 @@ contains
       structure_names = [(bubblescreens(i)%id, i=1, size(bubblescreens))]
       call unc_put_his_structure_names(ncid, his_write_settings%bubblescreens, id_bubblescreen_name, structure_names)
 
-      if (network%sts%numGates > 0) then
-         indices = [(network%sts%gateIndices(i), integer :: i=1, ngategen)]
-         structure_names = [(trimexact(network%sts%struct(network%sts%gateIndices(i))%id, strlen_netcdf), integer :: i=1, ngategen)]
+      if (network%sts%numGates > 0 .and. ngategen > 0) then
+         indices = [(network%sts%gateIndices(i), i=1, ngategen)]
+         structure_names = [(trimexact(network%sts%struct(network%sts%gateIndices(i))%id, strlen_netcdf), i=1, ngategen)]
       else
          indices = [(gate2cgen(i), i=1, ngategen)]
          structure_names = [(cgen_ids(indices(i)), i=1, ngategen)]
