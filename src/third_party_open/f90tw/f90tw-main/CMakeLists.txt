@@ -6,7 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # f90 line length; TODO handle compilers other than GNU
 set(CMAKE_Fortran_FORMAT FREE)
 if(CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_Fortran_FLAGS ${CMAKE_Fortran_FLAGS} "-ffree-line-length-none")
+    # CMAKE_Fortran_FLAGS is a string, one element of which holds several flags.
+    # The list form of set() kept the two apart with a semicolon, which reached
+    # the compile line and let the shell split the command there.
+    string(APPEND CMAKE_Fortran_FLAGS " -ffree-line-length-none")
 endif()
 
 add_subdirectory(f90tw)

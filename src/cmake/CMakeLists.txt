@@ -36,40 +36,84 @@ include(functions.cmake)
 set(checkout_src_root ${CMAKE_CURRENT_SOURCE_DIR}/..) # This points to the location of OSS/src
 set(checkout_root ${checkout_src_root}/..)
 
-# Conan: check if conan.lock or conanfile.py have changed since last conan install.
-# If so, configuration is stopped and conan must be rerun. This doesn't catch all conan changes
-# (e.g. profile changes aren't taken into account), but it is a good basic safety net.
-set(conan_lock_source "${checkout_root}/conan.lock")
-set(conan_file_source "${checkout_root}/conanfile.py")
-set(conan_stamp "${CMAKE_BINARY_DIR}/conan/generators/conan.stamp")
-if("${conan_lock_source}" IS_NEWER_THAN "${conan_stamp}" OR
-    "${conan_file_source}" IS_NEWER_THAN "${conan_stamp}")
-    message(FATAL_ERROR
-        "The conan configuration has been updated since the last conan install. "
-        "Please do a clean build using build.py to ensure dependencies are up to date."
-    )
+# Find modules for dependencies that ship no package config of their own.
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/modules")
+
+# Third-party dependencies come from the Conan CMakeDeps output by default. Turning
+# this off discovers them from CMAKE_PREFIX_PATH instead, for sites that provide the
+# libraries themselves: a HPC module tree, or a conda environment.
+option(DELFT3D_USE_CONAN_DEPS "Discover third-party dependencies from the Conan CMakeDeps output" ON)
+
+if(DELFT3D_USE_CONAN_DEPS)
+    # Conan: check if conan.lock or conanfile.py have changed since last conan install.
+    # If so, configuration is stopped and conan must be rerun. This doesn't catch all conan changes
+    # (e.g. profile changes aren't taken into account), but it is a good basic safety net.
+    set(conan_lock_source "${checkout_root}/conan.lock")
+    set(conan_file_source "${checkout_root}/conanfile.py")
+    set(conan_stamp "${CMAKE_BINARY_DIR}/conan/generators/conan.stamp")
+    if("${conan_lock_source}" IS_NEWER_THAN "${conan_stamp}" OR
+        "${conan_file_source}" IS_NEWER_THAN "${conan_stamp}")
+        message(FATAL_ERROR
+            "The conan configuration has been updated since the last conan install. "
+            "Please do a clean build using build.py to ensure dependencies are up to date."
+        )
+    endif()
+
+    # Conan: add the CMakeDeps generator output to the search path and find all explicit dependencies.
+    # In the CMakeDeps generator, transitively depending on a dll counts as an explicit dependency,
+    # because we need to install the dll and deliver it to a user.
+    list(PREPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/conan/generators")
+    set(delft3d_dep_mode CONFIG)
+else()
+    # Let CMake try its own Find modules first and fall back to package config files,
+    # which is the layout both a conda environment and a module tree have.
+    set(delft3d_dep_mode "")
 endif()
 
-# Conan: add the CMakeDeps generator output to the search path and find all explicit dependencies.
-# In the CMakeDeps generator, transitively depending on a dll counts as an explicit dependency,
-# because we need to install the dll and deliver it to a user.
-list(PREPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/conan/generators")
-find_package(ZLIB CONFIG REQUIRED)
-find_package(HDF5 CONFIG REQUIRED)
-find_package(netCDF CONFIG REQUIRED)
-find_package(netCDF-Fortran CONFIG REQUIRED)
-find_package(expat CONFIG REQUIRED)
-find_package(TIFF CONFIG REQUIRED)
-find_package(PROJ CONFIG REQUIRED)
-find_package(GDAL CONFIG REQUIRED)
-find_package(PETSc CONFIG REQUIRED)
-find_package(triangle CONFIG REQUIRED)
-find_package(Boost CONFIG REQUIRED)
-find_package(precice CONFIG REQUIRED)
-find_package(GTest CONFIG REQUIRED)
-find_package(SWAN_MPI CONFIG REQUIRED)
-find_package(SWAN_OMP CONFIG REQUIRED)
-find_package(inja CONFIG REQUIRED)
+find_package(ZLIB ${delft3d_dep_mode} REQUIRED)
+find_package(HDF5 ${delft3d_dep_mode} REQUIRED)
+find_package(netCDF ${delft3d_dep_mode} REQUIRED)
+find_package(netCDF-Fortran ${delft3d_dep_mode} REQUIRED)
+find_package(expat ${delft3d_dep_mode} REQUIRED)
+# The Conan package config names the target expat::expat; CMake's own FindEXPAT
+# names it EXPAT::EXPAT. The tree links expat::expat either way.
+if(NOT TARGET expat::expat AND TARGET EXPAT::EXPAT)
+    add_library(expat::expat INTERFACE IMPORTED)
+    set_target_properties(expat::expat PROPERTIES INTERFACE_LINK_LIBRARIES EXPAT::EXPAT)
+endif()
+find_package(TIFF ${delft3d_dep_mode} REQUIRED)
+find_package(PROJ ${delft3d_dep_mode} REQUIRED)
+find_package(GDAL ${delft3d_dep_mode} REQUIRED)
+find_package(PETSc ${delft3d_dep_mode} REQUIRED)
+
+# triangle ships no package config, so without Conan it is built from the copy
+# vendored in this repository.
+if(DELFT3D_USE_CONAN_DEPS)
+    find_package(triangle CONFIG REQUIRED)
+else()
+    add_subdirectory(${checkout_src_root}/third_party_open/triangle triangle)
+    add_library(triangle::triangle ALIAS triangle)
+endif()
+
+# The components are what the tree links, so they are what has to be found. CMake's
+# own FindBoost defines a target only for a component that was asked for, and CMake 4
+# no longer searches for it at all (CMP0167), so this has to name them either way.
+find_package(Boost ${delft3d_dep_mode} REQUIRED COMPONENTS headers program_options filesystem date_time)
+find_package(precice ${delft3d_dep_mode} REQUIRED)
+find_package(GTest ${delft3d_dep_mode} REQUIRED)
+find_package(SWAN_MPI ${delft3d_dep_mode} REQUIRED)
+
+# SWAN comes in an MPI and an OpenMP build, but only the MPI one is linked
+# (SWAN_MPI::SWAN_MPI, in the wave engine); no target references SWAN_OMP. It stays
+# required under Conan, which supplies it, and is optional for a site that builds
+# its own SWAN and only needs the variant the wave engine links against.
+if(DELFT3D_USE_CONAN_DEPS)
+    find_package(SWAN_OMP CONFIG REQUIRED)
+else()
+    find_package(SWAN_OMP QUIET)
+endif()
+
+find_package(inja ${delft3d_dep_mode} REQUIRED)
 
 # main repository directory
 cmake_path(GET CMAKE_CURRENT_SOURCE_DIR PARENT_PATH PARENT_DIR)
@@ -160,7 +204,11 @@ if(UNIX)
     #MPI
     find_package(MPI REQUIRED)
     add_definitions(-DHAVE_MPI)
-    set(mpi_module_path ${mpi_include_path})
+    # The rest of the tree consumes these two names, as the Windows branch above
+    # fills them in; on UNIX FindMPI is what knows them. Without them the module
+    # path is empty and mpi.mod is never found.
+    set(mpi_module_path ${MPI_Fortran_INCLUDE_DIRS})
+    set(mpi_fortran_library MPI::MPI_Fortran)
 endif(UNIX)
 
 if(UNIX)

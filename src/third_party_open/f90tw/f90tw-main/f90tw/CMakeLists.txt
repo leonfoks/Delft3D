@@ -43,7 +43,7 @@ function(F90TWFPP INFILE OUTFILE)
         find_program(TR_EXE NAMES "tr" REQUIRED)
         add_custom_command(
             OUTPUT "${OUTFILE}"
-            COMMAND "${FPP_EXE}" ${FPPOPTS} ${FPPDEFS} ${FPPINCL} "${INFILE}" | ${SED_EXE} "/^[ \\t]*#/d" | ${TR_EXE} "\\;" "\\n" | ${SED_EXE} "s/^[ \\t]*//;s/[ \\t]*$//;/^$/d" > "${OUTFILE}"
+            COMMAND "${FPP_EXE}" ${FPPOPTS} ${FPPDEFS} ${FPPINCL} "${INFILE}" | ${SED_EXE} "/^[[:space:]]*#/d" | ${TR_EXE} "\\;" "\\n" | ${SED_EXE} "s/^[[:space:]]*//;s/[[:space:]]*$//;/^$/d" > "${OUTFILE}"
             DEPENDS "${INFILE}" ${FPP_DEPENDS}
             COMMENT "precompile ${INFILE}"
             VERBATIM
@@ -80,7 +80,7 @@ function(F90TWF2H INFILES OUTFILE)
         find_program(SED_EXE NAMES "sed" REQUIRED)
         add_custom_command(
             OUTPUT ${F2H_OUTFILE}
-            COMMAND ${SED_EXE} '/^[ \\t]*[!cC]\$$[fF]90[tT][wW]/!d \; s/.*[!cC]\$$[fF]90[tT][wW][ \\t]*\\\(.*\\\)$$/\\1/' ${F2H_INFILES} > ${F2H_OUTFILE}
+            COMMAND ${SED_EXE} '/^[[:space:]]*[!cC]\$$[fF]90[tT][wW]/!d \; s/.*[!cC]\$$[fF]90[tT][wW][[:space:]]*\\\(.*\\\)$$/\\1/' ${F2H_INFILES} > ${F2H_OUTFILE}
             DEPENDS ${F2H_INFILES}
             COMMENT "process ${F2H_INFILES}"
         )
@@ -163,7 +163,9 @@ function(F90TWTEST NAME)
         )
         
     endif()
-    gtest_discover_tests(${NAME} WORKING_DIRECTORY $<TARGET_FILE_DIR:${NAME}>)
+    # Running a freshly linked binary for the first time can take longer than the
+    # 5 s default, on macOS and on networked filesystems alike.
+    gtest_discover_tests(${NAME} WORKING_DIRECTORY $<TARGET_FILE_DIR:${NAME}> DISCOVERY_TIMEOUT 120)
 endfunction()
 
 # resolve the preprocessor to be used. it is assumed that on unix-based systems
@@ -186,6 +188,11 @@ if(WIN32)
     set(FPP_SWITCH /)
 else()
     set(FPP_OPTIONS -E)
+    # clang maps the .fpp extension to Fortran and then refuses the input, so the
+    # language has to be named explicitly. Only the C preprocessor is wanted here.
+    if(FPP_EXE MATCHES "clang")
+        list(APPEND FPP_OPTIONS -x c)
+    endif()
     set(FPP_SWITCH -)
 endif()
 

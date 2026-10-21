@@ -14,7 +14,12 @@ foreach(swan_variant IN ITEMS mpi omp)
     set(swan_package swan_${swan_variant})
     string(TOUPPER "${swan_variant}" swan_variant_upper)
     if(NOT TARGET SWAN_${swan_variant_upper}::SWAN_${swan_variant_upper})
-        message(FATAL_ERROR "The Conan target for ${swan_package} is missing.")
+        if(DELFT3D_USE_CONAN_DEPS)
+            message(FATAL_ERROR "The Conan target for ${swan_package} is missing.")
+        endif()
+        # Outside Conan the site decides which SWAN variants to provide. Only the
+        # MPI one is linked, so install whichever are present and skip the rest.
+        continue()
     endif()
 
     # Dependencies may be built in Release even when Delft3D is built in Debug.
@@ -25,7 +30,16 @@ foreach(swan_variant IN ITEMS mpi omp)
         endif()
     endforeach()
     if(NOT swan_package_configurations)
-        message(FATAL_ERROR "Conan did not provide a package folder for ${swan_package}.")
+        if(DELFT3D_USE_CONAN_DEPS)
+            message(FATAL_ERROR "Conan did not provide a package folder for ${swan_package}.")
+        endif()
+        # Without Conan the package config has to name the prefix the executables
+        # live under, as <package>_PACKAGE_FOLDER_<CONFIG>. Nothing to install if it
+        # does not, but the libraries are still usable.
+        message(WARNING
+            "No package folder for ${swan_package}; its executables will not be installed. "
+            "Set ${swan_package}_PACKAGE_FOLDER_<CONFIG> from its package config.")
+        continue()
     endif()
     list(GET swan_package_configurations 0 swan_fallback_configuration)
     if("RELEASE" IN_LIST swan_package_configurations)
