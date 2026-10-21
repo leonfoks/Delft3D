@@ -265,11 +265,7 @@
 ! write logo on screen
   if (in_f90_runner) then
      IScren = 6
-#if (defined(HAVE_CONFIG_H))
      Open (Iscren,FORM='FORMATTED')
-#else
-     Open (Iscren,carriagecontrol='FORTRAN')
-#endif
     call WriteHeader(Iscren)
   endif
 

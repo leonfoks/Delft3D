@@ -45,7 +45,7 @@ subroutine test_read_snapped_observ_crs
     use unstruc_model
     use m_partitioninfo, only: jampi
     use network_data, only: numk
-    use ifport
+    use chdir_mod, only: chdir
     use m_flow_modelinit, only: flow_modelinit
     use m_resetfullflowmodel, only: resetfullflowmodel
     !
@@ -53,7 +53,6 @@ subroutine test_read_snapped_observ_crs
     integer, parameter                           :: N_Observ_Crs = 3
     integer                                      :: i
     integer                                      :: istat
-    logical                                      :: success
     double precision                             :: refcoord1(2)
     double precision                             :: refcoord2(2,3)
     double precision                             :: refcoord3(2)
@@ -100,11 +99,11 @@ subroutine test_read_snapped_observ_crs
     
     
     !
-    success = CHANGEDIRQQ("observCrossSections_snapped")
+    call chdir("observCrossSections_snapped")
     mdufile = 'FlowFM.mdu'
     call loadModel(mdufile)
     istat = flow_modelinit()
-    success = CHANGEDIRQQ("..")
+    call chdir("..")
     !
     ! first observCrs
     call assert_equal     (crs(1)%name, refnames(1), 'Name of the first observation cross section incorrect' )

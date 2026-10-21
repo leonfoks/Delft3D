@@ -34,11 +34,13 @@ subroutine GPSLEEP (sleeptime)
 ! **********************************************************************
    integer  ::  sleeptime
 
-! Define the conversion factor to milliseconds, which is platform dependent
-#if (defined(HAVE_CONFIG_H))
-    call sleep(sleeptime)
-#else
+! SLEEPQQ is Intel-specific, as in JZSLEEP in CONTROL.F90.
+#ifdef __INTEL_COMPILER
     call SLEEPQQ(sleeptime)
+#else
+    ! never more than a second
+    ! TODO: Must be modified into routine that also supports milliseconds
+    call sleep(1)
 #endif
 
 end subroutine

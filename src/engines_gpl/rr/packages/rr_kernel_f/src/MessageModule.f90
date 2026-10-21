@@ -134,11 +134,11 @@ contains
        IBAR0 = min ( 60, IBar0)
        IF ( IBAR .GT. IBar0 .AND. IBAR .LT. 60 ) &
 ! Powerstation     WRITE(*,'(''+    '',A)') BAR(1:IBAR)
-          WRITE(ISCREN,'(''+    '',A,A,4X,A)') BAR(1:IBAR),Banner(IBar+1:60),RemTime
+          WRITE(ISCREN,'(a)',advance='no') achar(13)//'    '//BAR(1:IBAR)//Banner(IBar+1:60)//'    '//RemTime
 ! Digital
 !       WRITE(ISCREN,'(A,\)')  BAR(IBar0+1:IBAR)
        IF ( IBAR .EQ. 60 ) &
-           WRITE(ISCREN,'(''+    '',A,4X,A)') BAR(1:IBAR),RemTime
+           WRITE(ISCREN,'(a)',advance='no') achar(13)//'    '//BAR(1:IBAR)//'    '//RemTime
        IBar0 = IBar
    ENDIF
  Else
@@ -170,7 +170,7 @@ contains
        IBAR0 = min ( 60, IBar0)
        IF ( IBAR.GT. IBar0 .AND. IBAR .LT. 60 ) &
 ! Powerstation     WRITE(*,'(''+         '',A)') BAR(1:IBAR)
-          WRITE(ISCREN,'(''+         '',A)') BAR(1:IBAR)
+          WRITE(ISCREN,'(a)',advance='no') achar(13)//'         '//BAR(1:IBAR)
 ! Digital
 !       WRITE(ISCREN,'(A,\)')  BAR(IBar0+1:IBAR)
        IBar0 = IBar

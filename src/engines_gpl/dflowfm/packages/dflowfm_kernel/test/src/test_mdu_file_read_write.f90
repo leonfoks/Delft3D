@@ -36,13 +36,14 @@ contains
       use unstruc_model, only: readMDUFile, md_obsfile, writeMDUFile, md_crsfile
       use dfm_error, only: DFM_NOERR
       use m_partitioninfo, only: jampi
-      use ifport, only: CHANGEDIRQQ
+      use m_chdir_helpers, only: chdir
       use m_resetfullflowmodel, only: resetFullFlowModel
 
       character(len=1024) :: tm_md_obsfile
       character(len=1024) :: tm_md_crsfile
       character(len=256) :: output_file
       integer :: ierr
+      integer :: chdir_err
 
       jampi = 0
 
@@ -52,7 +53,8 @@ contains
 
       call resetFullFlowModel()
 
-      call F90_ASSERT_TRUE(CHANGEDIRQQ('MDUversion'), '')
+      call chdir('MDUversion', chdir_err)
+      call f90_assert_eq(chdir_err, 0, 'Could not change to directory MDUversion.')
       threshold_abort = LEVEL_FATAL
       call readMDUFile('stretch_example.mdu', ierr)
       call f90_assert_eq(ierr, DFM_NOERR, 'Error when reading MDU file.')
@@ -71,7 +73,8 @@ contains
 
       call F90_EXPECT_STREQ(trim(md_obsfile)//c_null_char, trim(tm_md_obsfile)//c_null_char, 'Difference in md_obsfile after read-write-read cycle.')
       call F90_EXPECT_STREQ(trim(md_crsfile)//c_null_char, trim(tm_md_crsfile)//c_null_char, 'Difference in md_crsfile after read-write-read cycle.')
-      call F90_ASSERT_TRUE(CHANGEDIRQQ('..'), '')
+      call chdir('..', chdir_err)
+      call f90_assert_eq(chdir_err, 0, 'Could not change to the parent directory.')
 
    end subroutine test_mdu_read_write_read
    !$f90tw)
@@ -81,20 +84,23 @@ contains
       use unstruc_model, only: readMDUFile
       use dfm_error, only: DFM_NOERR
       use m_partitioninfo, only: jampi
-      use ifport, only: CHANGEDIRQQ
+      use m_chdir_helpers, only: chdir
       use m_resetfullflowmodel, only: resetFullFlowModel
 
       integer :: ierr
+      integer :: chdir_err
 
       jampi = 0
 
       call resetFullFlowModel()
 
-      call F90_ASSERT_TRUE(CHANGEDIRQQ('MDUversion'), '')
+      call chdir('MDUversion', chdir_err)
+      call f90_assert_eq(chdir_err, 0, 'Could not change to directory MDUversion.')
       ! read MDU
       threshold_abort = LEVEL_FATAL
       call readMDUFile('old_model.mdu', ierr)
-      call F90_ASSERT_TRUE(CHANGEDIRQQ('..'), '')
+      call chdir('..', chdir_err)
+      call f90_assert_eq(chdir_err, 0, 'Could not change to the parent directory.')
 
       call f90_expect_eq(ierr, DFM_NOERR, 'Error when reading old MDU file version with [model] block.')
 
@@ -106,20 +112,23 @@ contains
       use unstruc_model, only: readMDUFile
       use dfm_error, only: DFM_NOERR
       use m_partitioninfo, only: jampi
-      use ifport, only: CHANGEDIRQQ
+      use m_chdir_helpers, only: chdir
       use m_resetfullflowmodel, only: resetFullFlowModel
 
       integer :: ierr
+      integer :: chdir_err
 
       jampi = 0
 
       call resetFullFlowModel()
 
-      call F90_ASSERT_TRUE(CHANGEDIRQQ("MDUversion"), '')
+      call chdir("MDUversion", chdir_err)
+      call f90_assert_eq(chdir_err, 0, 'Could not change to directory MDUversion.')
       ! read MDU
       threshold_abort = LEVEL_FATAL
       call readMDUFile('new_general.mdu', ierr)
-      call F90_ASSERT_TRUE(CHANGEDIRQQ(".."), '')
+      call chdir("..", chdir_err)
+      call f90_assert_eq(chdir_err, 0, 'Could not change to the parent directory.')
 
       call f90_expect_eq(ierr, DFM_NOERR, 'Error when reading new MDU file version with [General] block.')
 
@@ -131,22 +140,25 @@ contains
       use unstruc_model, only: readMDUFile
       use dfm_error, only: DFM_NOERR
       use m_partitioninfo, only: jampi
-      use ifport, only: CHANGEDIRQQ
+      use m_chdir_helpers, only: chdir
       use m_resetfullflowmodel, only: resetFullFlowModel
       use m_flow, only: laycof
       use precision, only: dp
 
       integer :: ierr
+      integer :: chdir_err
       real(kind=hp) :: sumlaycof
 
       jampi = 0
 
       call resetFullFlowModel()
 
-      call F90_ASSERT_TRUE(CHANGEDIRQQ("MDUversion"), '')
+      call chdir("MDUversion", chdir_err)
+      call f90_assert_eq(chdir_err, 0, 'Could not change to directory MDUversion.')
       threshold_abort = LEVEL_FATAL
       call readMDUFile('stretch_example.mdu', ierr)
-      call F90_ASSERT_TRUE(CHANGEDIRQQ(".."), '')
+      call chdir("..", chdir_err)
+      call f90_assert_eq(chdir_err, 0, 'Could not change to the parent directory.')
 
       call f90_expect_eq(ierr, DFM_NOERR, 'Error when reading MDU file with stretch coeff.')
       call f90_expect_eq(size(laycof), 18, "Difference in dimension of laycof")

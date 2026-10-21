@@ -20,31 +20,6 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-module chdir_mod
-
-  implicit none
-
-  interface
-    integer function c_chdir(path) bind(C,name="chdir")
-      use iso_c_binding
-      character(kind=c_char) :: path(*)
-    end function
-  end interface
-
-contains
-
-  subroutine chdir(path, err)
-    use iso_c_binding
-    character(*) :: path
-    integer, optional, intent(out) :: err
-    integer :: loc_err
-
-    loc_err =  c_chdir(path//c_null_char)
-
-    if (present(err)) err = loc_err
-  end subroutine
-end module chdir_mod
-    
 module test_observations
     use ftnunit
     use precision
@@ -104,7 +79,7 @@ subroutine test_read_snapped_obs_points
     use m_observations
     use unstruc_model
     use m_partitioninfo, only: jampi
-    use ifport
+    use chdir_mod, only: chdir
     use m_flow_modelinit, only: flow_modelinit
     use m_resetfullflowmodel, only: resetfullflowmodel
     !
@@ -112,7 +87,6 @@ subroutine test_read_snapped_obs_points
     integer, parameter                           :: N_OBS_POINTS = 4
     integer                                      :: i
     integer                                      :: istat
-    logical                                      :: success_
     integer          , dimension(N_OBS_POINTS)   :: ref_k
     double precision , dimension(2,N_OBS_POINTS) :: refdata
     character(len=40), dimension(N_OBS_POINTS)   :: refnames
@@ -135,14 +109,14 @@ subroutine test_read_snapped_obs_points
     call resetFullFlowModel()
     call increaseNetw(kmax, lmax)
     !
-    success_ = CHANGEDIRQQ("observations_snapped")
+    call chdir("observations_snapped")
     !istat = SYSTEM("echo %CD%")
-    
+
     mdufile = 'Flow1d.mdu'
     call loadModel(mdufile)
     istat = flow_modelinit()
-    
-    success_ = CHANGEDIRQQ("..")
+
+    call chdir("..")
     !
     do i=1,N_OBS_POINTS
         call assert_equal     (kobs(i)    , ref_k    (i), 'index of snapped observation points incorrect' )

@@ -67,14 +67,14 @@ subroutine test_iniField1dField
     use unstruc_channel_flow
     use m_inquire_flowgeom
     use dfm_error
-    use ifport
+    use chdir_mod, only: chdir
     use m_flow_modelinit, only: flow_modelinit
     use m_resetfullflowmodel, only: resetfullflowmodel
     !
     ! Locals
     integer                   :: i, j, k, ibr
     integer                   :: istat, ierr
-    logical                   :: success
+    integer                   :: chdir_err
     double precision          :: refs1_br4(6)
     double precision          :: refs1_br10
     double precision          :: refs1_other
@@ -101,14 +101,14 @@ subroutine test_iniField1dField
     call increaseNetw(kmax, lmax)
     call resetFullFlowModel()
 
-    success = CHANGEDIRQQ("IniField1dField")
-    call assert_true(success, 'Could not change to directory ''IniField1dField''.')
+    call chdir("IniField1dField", chdir_err)
+    call assert_true(chdir_err == 0, 'Could not change to directory ''IniField1dField''.')
     mdufile = 'Flow1D.mdu'
     call loadModel(mdufile)
     istat = flow_modelinit()
     call assert_equal(istat, 0, 'Could not initialize flow model.')
-    success = CHANGEDIRQQ("..")
-    call assert_true(success, 'Could not change to parent directory of ''IniField1dField''.')
+    call chdir("..", chdir_err)
+    call assert_true(chdir_err == 0, 'Could not change to parent directory of ''IniField1dField''.')
 
     ! check initial waterlevel s1 on branch 4
     ibr = 4
@@ -180,14 +180,14 @@ subroutine test_iniField1dField_waterdepth
     use m_netw
     use unstruc_model
     use dfm_error
-    use ifport
+    use chdir_mod, only: chdir
     use m_flow_modelinit, only: flow_modelinit
     use m_resetfullflowmodel, only: resetfullflowmodel
 
     ! Locals
     integer                                     :: i
     integer                                     :: istat
-    logical                                     :: success
+    integer                                     :: chdir_err
     double precision, dimension(:), allocatable :: refs1
     character(len=40)                           :: mdufile
 
@@ -355,14 +355,14 @@ subroutine test_iniField1dField_waterdepth
     call increaseNetw(kmax, lmax)
     call resetFullFlowModel()
 
-    success = CHANGEDIRQQ("IniField1dField_waterdepth")
-    call assert_true(success, 'Could not change to directory ''IniField1dField_waterdepth''.')
+    call chdir("IniField1dField_waterdepth", chdir_err)
+    call assert_true(chdir_err == 0, 'Could not change to directory ''IniField1dField_waterdepth''.')
     mdufile = 'dflow1d.mdu'
     call loadModel(mdufile)
     istat = flow_modelinit()
     call assert_equal(istat, 0, 'Could not initialize flow model.')
-    success = CHANGEDIRQQ("..")
-    call assert_true(success, 'Could not change to parent directory of ''IniField1dField_waterdepth''.')
+    call chdir("..", chdir_err)
+    call assert_true(chdir_err == 0, 'Could not change to parent directory of ''IniField1dField_waterdepth''.')
 
     do i = 1, ndx
        call assert_comparable(s1(i), refs1(i), eps, 'initial waterlevel incorrect' )
@@ -380,14 +380,14 @@ subroutine test_iniField1dField_waterlevel
     use m_netw
     use unstruc_model
     use dfm_error
-    use ifport
+    use chdir_mod, only: chdir
     use m_flow_modelinit, only: flow_modelinit
     use m_resetfullflowmodel, only: resetfullflowmodel
     !
     ! Locals
     integer                                     :: i
     integer                                     :: istat
-    logical                                     :: success
+    integer                                     :: chdir_err
     double precision, dimension(:), allocatable :: refs1
     character(len=40)                           :: mdufile
     !
@@ -555,14 +555,14 @@ subroutine test_iniField1dField_waterlevel
     call increaseNetw(kmax, lmax)
     call resetFullFlowModel()
 
-    success = CHANGEDIRQQ("IniField1dField_waterlevel")
-    call assert_true(success, 'Could not change to directory ''IniField1dField_waterlevel''.')
+    call chdir("IniField1dField_waterlevel", chdir_err)
+    call assert_true(chdir_err == 0, 'Could not change to directory ''IniField1dField_waterlevel''.')
     mdufile = 'dflow1d.mdu'
     call loadModel(mdufile)
     istat = flow_modelinit()
     call assert_equal(istat, 0, 'Could not initialize flow model.')
-    success = CHANGEDIRQQ("..")
-    call assert_true(success, 'Could not change to parent directory of ''IniField1dField_waterlevel''.')
+    call chdir("..", chdir_err)
+    call assert_true(chdir_err == 0, 'Could not change to parent directory of ''IniField1dField_waterlevel''.')
 
     do i = 1, ndx
        call assert_comparable(s1(i), refs1(i), eps, 'initial waterlevel is incorrect' )
@@ -580,14 +580,14 @@ subroutine test_iniField1dField_waterdepth_cross_sections
     use m_netw
     use unstruc_model
     use dfm_error
-    use ifport
+    use chdir_mod, only: chdir
     use m_flow_modelinit, only: flow_modelinit
     use m_resetfullflowmodel, only: resetfullflowmodel
     !
     ! Locals
     integer                                     :: i
     integer                                     :: istat
-    logical                                     :: success
+    integer                                     :: chdir_err
     double precision                            :: global_water_depth
     double precision                            :: first_branch_shift
     double precision                            :: cross_section_lowest_level
@@ -603,14 +603,14 @@ subroutine test_iniField1dField_waterdepth_cross_sections
     call increaseNetw(kmax, lmax)
     call resetFullFlowModel()
 
-    success = CHANGEDIRQQ("IniField1dField_waterdepth_cross_section")
-    call assert_true(success, 'Could not change to directory ''IniField1dField_waterdepth_cross_section''.')
+    call chdir("IniField1dField_waterdepth_cross_section", chdir_err)
+    call assert_true(chdir_err == 0, 'Could not change to directory ''IniField1dField_waterdepth_cross_section''.')
     mdufile = 'dflow1d.mdu'
     call loadModel(mdufile)
     istat = flow_modelinit()
     call assert_equal(istat, 0, 'Could not initialize flow model.')
-    success = CHANGEDIRQQ("..")
-    call assert_true(success, 'Could not change to parent directory of ''IniField1dField_waterdepth_cross_section''.')
+    call chdir("..", chdir_err)
+    call assert_true(chdir_err == 0, 'Could not change to parent directory of ''IniField1dField_waterdepth_cross_section''.')
 
     ! First branch
     do i = 1, 8
@@ -630,7 +630,7 @@ subroutine two_branch_water_depth_and_level_combination(level_first_branch, leve
     use m_flowgeom, only: bl
     use m_netw
     use unstruc_model
-    use ifport
+    use chdir_mod, only: chdir
     use m_flow_modelinit, only: flow_modelinit
     use m_resetfullflowmodel, only: resetfullflowmodel
 
@@ -642,7 +642,7 @@ subroutine two_branch_water_depth_and_level_combination(level_first_branch, leve
     integer,           parameter :: number_nodes_second_branch = 14
     character(len=12)            :: mdufile
     integer                      :: i
-    logical                      :: success
+    integer                      :: chdir_err
     integer                      :: istat
 
     kmax  = 2
@@ -653,13 +653,13 @@ subroutine two_branch_water_depth_and_level_combination(level_first_branch, leve
     call increaseNetw(kmax, lmax)
     call resetFullFlowModel()
 
-    success = CHANGEDIRQQ(test_dir_name)
-    call assert_true(success, 'Could not change to directory '''//trim(test_dir_name)//'''.')
+    call chdir(test_dir_name, chdir_err)
+    call assert_true(chdir_err == 0, 'Could not change to directory '''//trim(test_dir_name)//'''.')
     call loadModel(mdufile)
     istat = flow_modelinit()
     call assert_equal(istat, 0, 'Could not initialize flow model.')
-    success = CHANGEDIRQQ("..")
-    call assert_true(success, 'Could not change to parent directory of '''//trim(test_dir_name)//'''.')
+    call chdir("..", chdir_err)
+    call assert_true(chdir_err == 0, 'Could not change to parent directory of '''//trim(test_dir_name)//'''.')
 
     do i = 1, number_nodes_first_branch
        call assert_comparable(bl(i), 0.0_dp, eps, 'first branch initial bedlevel is incorrect')
@@ -726,7 +726,7 @@ subroutine test_iniField1d_waterlevel_2d_points_not_set()
     use m_partitioninfo, only: jampi
     use m_netw
     use unstruc_model
-    use ifport
+    use chdir_mod, only: chdir
     use m_flow_modelinit, only: flow_modelinit
     use m_resetfullflowmodel, only: resetfullflowmodel
 
@@ -737,7 +737,7 @@ subroutine test_iniField1d_waterlevel_2d_points_not_set()
     real(kind=dp), parameter :: level_1d = 1.0_dp
     real(kind=dp), parameter :: level_2d = 0.0_dp
     integer                  :: i
-    logical                  :: success
+    integer                  :: chdir_err
     integer                  :: istat
 
     mdufile = 'FM_model.mdu'
@@ -750,13 +750,13 @@ subroutine test_iniField1d_waterlevel_2d_points_not_set()
     call increaseNetw(kmax, lmax)
     call resetFullFlowModel()
 
-    success = CHANGEDIRQQ(test_dir_name)
-    call assert_true(success, 'Could not change to directory '''//trim(test_dir_name)//'''.')
+    call chdir(test_dir_name, chdir_err)
+    call assert_true(chdir_err == 0, 'Could not change to directory '''//trim(test_dir_name)//'''.')
     call loadModel(mdufile)
     istat = flow_modelinit()
     call assert_equal(istat, 0, 'Could not initialize flow model.')
-    success = CHANGEDIRQQ("..")
-    call assert_true(success, 'Could not change to parent directory of '''//trim(test_dir_name)//'''.')
+    call chdir("..", chdir_err)
+    call assert_true(chdir_err == 0, 'Could not change to parent directory of '''//trim(test_dir_name)//'''.')
 
     do i = 1, number_2d_nodes
        call assert_comparable(bl(i), 0.0_dp, eps, '2d initial bedlevel is incorrect')

@@ -39,7 +39,7 @@ subroutine test_roughness_branches
    use m_roughness
    use m_read_roughness
    use m_hash_search
-   use ifport
+   use chdir_mod, only: chdir
    
    type(t_network)         :: network
    type(t_CSType), pointer :: cross
@@ -47,7 +47,6 @@ subroutine test_roughness_branches
    integer                 :: ibranch
    integer                 :: section
    integer                 :: igrid
-   logical                 :: success
    double precision        :: h
    double precision        :: q
    double precision        :: u
@@ -69,12 +68,12 @@ subroutine test_roughness_branches
    call fill_hashtable(network%brs)
    cross => null()
 
-   success = CHANGEDIRQQ("roughness")
+   call chdir("roughness")
 
    roughnessfiles = 'roughness_main.ini;roughness-globals.ini'
    call roughness_reader(network, roughnessfiles)
 
-   success = CHANGEDIRQQ("..")
+   call chdir("..")
 
    ibranch  = 4
    section  = hashsearch(network%rgs%hashlist, 'chezy45')

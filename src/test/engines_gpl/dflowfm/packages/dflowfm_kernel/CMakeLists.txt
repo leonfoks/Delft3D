@@ -1,6 +1,7 @@
 set(executable_name dflowfm_kernel_test)
 
-file(GLOB source src/*.f90)
+# .F90 sources are preprocessed; chdir_mod.F90 needs that to pick its chdir.
+file(GLOB source src/*.f90 src/*.F90)
 
 add_executable(${executable_name} ${source})
 

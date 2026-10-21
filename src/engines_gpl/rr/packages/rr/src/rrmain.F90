@@ -94,7 +94,7 @@
 !  ReturnCode = SetConsoleTextAttribute(Iconsole,COMMON_LVB_REVERSE_VIDEO)
 !  ReturnCode = SetConsoleTextAttribute(Iconsole,FOREGROUND_RED)
 #elif defined(X64)
-  NrArg = nargs()
+  NrArg = command_argument_count()
 ! For nice Progress bar also in Chinese Windows
 !  ReturnCode = SetConsoleOutputCP(1252)
 ! aanpassen kleuren; nog niet ok

@@ -510,11 +510,7 @@
 ! *********************************************************************
 
       ISCREN = 6
-#if (defined(HAVE_CONFIG_H))
       Open (Iscren,FORM='FORMATTED')
-#else
-      Open (Iscren,carriagecontrol='FORTRAN')
-#endif
 
       NEVENT = 1
 

@@ -46,12 +46,11 @@ subroutine test_storage_nodes_nodeID_table
     use unstruc_model
     use m_partitioninfo, only: jampi
     use network_data, only: numk
-    use ifport
+    use chdir_mod, only: chdir
     use m_resetfullflowmodel, only: resetfullflowmodel
     !
     ! Locals
     integer, parameter                           :: N_StorageNodes = 1
-    logical                                      :: success
     double precision                             :: reftable(3,2)
     character(len=40), dimension(N_StorageNodes) :: refids
     character(len=40), dimension(N_StorageNodes) :: refnodeIds
@@ -72,11 +71,11 @@ subroutine test_storage_nodes_nodeID_table
     call increaseNetw(kmax, lmax)
     call resetFullFlowModel()
     !
-    success = CHANGEDIRQQ("storageNodes_nodeId_useTable")
+    call chdir("storageNodes_nodeId_useTable")
     mdufile = 'Flow1D_table.mdu'
     call loadModel(mdufile) ! storage nodes are read in this subroutine
 
-    success = CHANGEDIRQQ("..")
+    call chdir("..")
     ! compare
     call assert_equal     (network%storS%stor(1)%id,     refids(1),     'Id of the storage node incorrect' )
     call assert_equal     (network%storS%stor(1)%node_Id, refnodeIds(1), 'Node Id of the storage node incorrect' )

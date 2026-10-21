@@ -41,7 +41,7 @@ contains
 !> tests reading of blocks for generalstructure in 2D3D format
    subroutine test_generalstructure_2d3d
       use dfm_error
-      use ifport, only: CHANGEDIRQQ
+      use chdir_mod, only: chdir
       use properties
       use m_mathconstants, only: eps_hp
       use m_strucs
@@ -59,12 +59,12 @@ contains
       logical :: success !< Whether value was read successfully or not.
 
       structurefile = "structures.ini"
-      success = CHANGEDIRQQ("structures")
+      call chdir("structures")
 
       call tree_create(trim(structurefile), str_ptr)
       call prop_inifile(structurefile, str_ptr, ierr)
       call assert_equal(ierr, DFM_NOERR, 'Error reading structure file.')
-      success = CHANGEDIRQQ("..")
+      call chdir("..")
 
       numblocks = tree_num_nodes(str_ptr)
       call assert_equal(numblocks, 5, 'File structures/structures.ini is expected to contain 5 blocks.')
