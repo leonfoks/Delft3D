@@ -469,8 +469,11 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../bsd-2.txt
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lgpl-2.1.txt
     DESTINATION share)
 
-# Install proj.db only if PROJ library is found and being used
-if(TARGET PROJ::proj)
+# Install proj.db only if PROJ library is found and being used. The Conan CMakeDeps
+# generator sets proj_PACKAGE_FOLDER_RELEASE; a PROJ from the system, or from a site
+# module tree, keeps its database in its own share/proj and sets nothing, which would
+# leave the path below empty.
+if(TARGET PROJ::proj AND DEFINED proj_PACKAGE_FOLDER_RELEASE)
     install(FILES "$<IF:$<CONFIG:Debug>,${proj_PACKAGE_FOLDER_DEBUG},$<IF:$<CONFIG:RelWithDebInfo>,${proj_PACKAGE_FOLDER_RELWITHDEBINFO},${proj_PACKAGE_FOLDER_RELEASE}>>/res/proj.db"
         DESTINATION share/proj)
 endif()
