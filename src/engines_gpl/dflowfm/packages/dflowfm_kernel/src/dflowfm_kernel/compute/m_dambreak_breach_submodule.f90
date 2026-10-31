@@ -224,7 +224,6 @@ contains
 
    !> Calculate breach growth using vdKnaap model
    subroutine calculate_breach_growth_using_vdKnaap_model(dambreak, time, time_step)
-      import t_dambreak
 
       class(t_dambreak), intent(inout) :: dambreak !< dambreak data for a single dambreak
       real(kind=dp), intent(in) :: time !< current time
@@ -269,7 +268,6 @@ contains
    subroutine calculate_breach_growth_using_Verheij_vdKnaap_model(dambreak, time, time_step)
       use ieee_arithmetic, only: ieee_is_nan
       use m_physcoef, only: gravity => ag
-      import t_dambreak
 
       class(t_dambreak), intent(inout) :: dambreak !< dambreak data for a single dambreak
       real(kind=dp), intent(in) :: time !< current time
@@ -336,7 +334,6 @@ contains
       use m_flowtimes, only: irefdate, tunit, tzone
       use messagehandling, only: msgbuf, LEVEL_ERROR, SetMessage
       use unstruc_channel_flow, only: network
-      import t_dambreak
 
       class(t_dambreak), intent(inout) :: dambreak !< dambreak data for a single dambreak
       real(kind=dp), intent(in) :: time !< current time

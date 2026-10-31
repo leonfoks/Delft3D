@@ -3088,7 +3088,8 @@ contains
          !
          ! Basic flow quantities
          !
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_OBSCRS_DISCHARGE), obscrs_data(:, 1), aggregate_obscrs_data)
+         function_pointer => aggregate_obscrs_data
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_OBSCRS_DISCHARGE), obscrs_data(:, 1), function_pointer)
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_OBSCRS_DISCHARGE_CUMUL), obscrs_data(:, 2))
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_OBSCRS_AREA), obscrs_data(:, 3))
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_OBSCRS_VELOCITY), obscrs_data(:, 4))
@@ -3107,7 +3108,8 @@ contains
       !
       if (his_write_settings%lateral > 0 .and. numlatsg > 0) then
          allocate (qplat_data(size(qplat, dim=2)))
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_LATERAL_PRESCRIBED_DISCHARGE_INSTANTANEOUS), qplat_data, transform_qplat)
+         function_pointer => transform_qplat
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_LATERAL_PRESCRIBED_DISCHARGE_INSTANTANEOUS), qplat_data, function_pointer)
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_LATERAL_PRESCRIBED_DISCHARGE_AVERAGE), qplatAve)
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_LATERAL_REALIZED_DISCHARGE_INSTANTANEOUS), qLatReal)
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_LATERAL_REALIZED_DISCHARGE_AVERAGE), qLatRealAve)
@@ -3117,7 +3119,8 @@ contains
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DRED_LINK_DISCHARGE), temp_pointer)
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DRED_DISCHARGE), dadpar%totvoldred)
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DUMP_DISCHARGE), dadpar%totvoldump)
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DRED_TIME_FRAC), null(), calculate_dredge_time_fraction)
+         function_pointer => calculate_dredge_time_fraction
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DRED_TIME_FRAC), null(), function_pointer)
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_PLOUGH_TIME_FRAC), time_ploughed)
       end if
 

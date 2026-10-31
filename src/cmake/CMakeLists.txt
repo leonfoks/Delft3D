@@ -458,7 +458,7 @@ if(${configuration_type} STREQUAL ${d3d4-suite_configuration})
     include(configurations/suites/d3d4_configuration.cmake)
 endif()
 
-if(UNIX)
+if(UNIX AND EXISTS "${CMAKE_BINARY_DIR}/conan/generators/conanrun.sh")
     add_subdirectory(${checkout_src_root}/${install_linux_libs_module} install_linux_libs)
 endif()
 
