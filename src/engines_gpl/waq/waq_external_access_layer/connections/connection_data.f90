@@ -34,10 +34,10 @@ module m_connection_data
 
         logical :: incoming                        !< Identifies the direction: if true, data from outside
         logical :: has_location_filter             !< Has a location filter set (filtering on location)
-        integer(kind=int_wp) :: category           !< Which category of data: concentrations, process parameters ...
-        integer(kind=int_wp) :: data_index         !< Index to use for finding the data
-        integer(kind=int_wp) :: location_index     !< Index of the location
-        integer(kind=int_wp) :: substance_index    !< Index of the substance in the substance array
+        integer(kind=int_wp) :: category = 0       !< Which category of data: concentrations, process parameters ...
+        integer(kind=int_wp) :: data_index = 0     !< Index to use for finding the data
+        integer(kind=int_wp) :: location_index = 0 !< Index of the location
+        integer(kind=int_wp) :: substance_index = 0 !< Index of the substance in the substance array
         character(:), allocatable :: location_text !< Text of the locations
         character(:), allocatable :: subst_name    !< Name of the substance
 
