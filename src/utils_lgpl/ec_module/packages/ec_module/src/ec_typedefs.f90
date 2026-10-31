@@ -335,8 +335,8 @@ module m_ec_typedefs
       integer, dimension(4) :: bbox = 1 !< bounding box of column- and row indices used from the complete source grid (only used when reading structured grid meteo fields from netCDF)
 
       integer :: issparse = 0 !< data in CRS format (1), or not (0)
-      integer, dimension(:), pointer :: ia !< CRS sparsity pattern, startpointers, dim(numrows+1)
-      integer, dimension(:), pointer :: ja !< CRS sparsity pattern, column numbers, dim(ia(numrows+1)-1)
+      integer, dimension(:), pointer :: ia => null() !< CRS sparsity pattern, startpointers, dim(numrows+1)
+      integer, dimension(:), pointer :: ja => null() !< CRS sparsity pattern, column numbers, dim(ia(numrows+1)-1)
    end type tEcField
 
    type tEcFieldPtr
