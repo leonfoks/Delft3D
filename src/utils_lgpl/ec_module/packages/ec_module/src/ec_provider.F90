@@ -1750,6 +1750,7 @@ contains
       end do
       ! close pli file
       close (fileReaderPtr%fileHandle, iostat=istat)
+      fileReaderPtr%fileHandle = ec_undef_int ! The filereader itself has now an invalid filehandle
 
       ! Construct the poly_tim Item.
       quantityId = ecInstanceCreateQuantity(instancePtr)
@@ -2147,6 +2148,7 @@ contains
       !
       ! close pli file
       close (fileReaderPtr%fileHandle, iostat=istat)
+      fileReaderPtr%fileHandle = ec_undef_int ! The filereader itself has now an invalid filehandle
       success = .true.
    end function ecProviderCreatePolyTimItemsBC
 
