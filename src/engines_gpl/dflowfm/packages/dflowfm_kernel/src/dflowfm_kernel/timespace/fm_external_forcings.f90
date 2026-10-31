@@ -134,6 +134,11 @@ contains
          end if
       end if
 
+      if (.not. allocated(extfile_new_list)) then
+         ! no external forcing files configured: make the list an allocated empty one,
+         ! size() on an unallocated array is 1 in gfortran
+         allocate (extfile_new_list(0))
+      end if
       do i_ext = 1, size(extfile_new_list)
          if (len(trim(extfile_new_list(i_ext))) > 0) then
             inquire (file=trim(extfile_new_list(i_ext)), exist=jawel)
