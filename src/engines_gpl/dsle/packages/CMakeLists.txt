@@ -112,6 +112,11 @@ set_target_properties(dsle-static PROPERTIES
 
 target_include_directories(dsle-static INTERFACE src)
 
+# sealock.c calls fmin(); consumers of the archive have to name libm after it,
+# which only the target's link interface can guarantee. The shared dsle and
+# the Fortran drivers resolve libm through their own dependencies.
+target_link_libraries(dsle-static PUBLIC $<$<NOT:$<PLATFORM_ID:Windows>>:m>)
+
 # Explicitly set the `-DNDEBUG` flag in "non-Debug" builds. We ran into an 'assertion failed' crash with Release binaries.
 target_compile_definitions(dsle        PRIVATE $<$<NOT:$<CONFIG:Debug>>:NDEBUG>)
 target_compile_definitions(dsle-static PRIVATE $<$<NOT:$<CONFIG:Debug>>:NDEBUG>)
